@@ -1,1 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Coaching Hub | Tarrant County College Learning Commons</title>
+<style>
+/* ---------- Design Tokens (matched to site index) ---------- */
+:root {
+    --primary-color: #002D62;   /* TCC Deep Blue */
+    --primary-dark: #001F42;
+    --secondary-color: #007A87; /* Professional Teal */
+    --secondary-dark: #005C66;
+    --secondary-tint: #E6F4F5;
+    --gold: #F5C518;
+    --gold-soft: #FFF8DC;
+    --text-dark: #1E293B;
+    --text-muted: #64748B;
+    --bg-gradient-start: #F8FAFC;
+    --bg-gradient-end: #F1F5F9;
+    --card-bg: #FFFFFF;
+    --line: #E2E8F0;
+    --success: #15803D;
+    --success-tint: #F0FDF4;
+    --error: #B91C1C;
+    --error-tint: #FEF2F2;
+    --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
+}
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto !important; }
+}
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    color: var(--text-dark);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+:focus-visible { outline: 3px solid var(--secondary-color); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- Skip link ---------- */
+.skip-link {
+    position: absolute; top: -60px; left: 16px;
+    background: var(--primary-color); color: #fff;
+    padding: 10px 18px; border-radius: 0 0 10px 10px;
+    font-weight: 700; text-decoration: none; z-index: 200;
+    transition: top .2s;
+}
+.skip-link:focus { top: 0; }
+
+/* ---------- Header ---------- */
+header {
+    background: var(--card-bg);
+    border-bottom: 6px solid;
+    border-image: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) 1;
+    padding: 28px clamp(20px, 4vw, 48px) 0;
+}
+.masthead { max-width: 1100px; margin: 0 auto; }
+.institution {
+    font-size: .85rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--secondary-color);
+}
+header h1 {
+    font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 800;
+    color: var(--primary-color); letter-spacing: -0.5px; line-height: 1.15;
+    margin: 6px 0 4px;
+}
+header h1 .spark { color: var(--secondary-color); }
+.tagline { color: var(--text-muted); font-size: 1.05rem; max-width: 660px; }
+
+/* ---------- Nav ---------- */
+nav { max-width: 1100px; margin: 20px auto 0; padding-bottom: 16px; }
+nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+nav a {
+    display: inline-block; text-decoration: none;
+    color: var(--primary-color); font-weight: 600; font-size: .95rem;
+    padding: 9px 16px; border-radius: 999px;
+    border: 2px solid var(--line); background: #fff;
+    transition: all .15s;
+}
+nav a:hover, nav a:focus-visible { border-color: var(--secondary-color); background: var(--secondary-tint); }
+
+/* ---------- Progress ---------- */
+.progress-strip {
+    background: var(--primary-color); color: #fff;
+    padding: 12px clamp(20px, 4vw, 48px);
+}
+.progress-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+    font-size: .9rem; font-weight: 600;
+}
+.progress-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.12); border-radius: 999px; padding: 5px 13px;
+}
+.progress-chip .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,.35); flex: none;
+}
+.progress-chip.done .dot { background: var(--gold); }
+.progress-chip.done { background: rgba(245,197,24,.18); }
+
+/* ---------- Layout ---------- */
+main { max-width: 1100px; margin: 0 auto; padding: 36px clamp(20px, 4vw, 48px) 72px; }
+
+section.card {
+    background: var(--card-bg); border: 1px solid var(--line);
+    border-radius: 20px; box-shadow: var(--shadow-md);
+    padding: clamp(24px, 3.5vw, 40px); margin-bottom: 32px;
+    position: relative; overflow: hidden;
+}
+section.card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+.lesson-label {
+    font-size: .8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.2px; color: var(--secondary-color);
+}
+section.card h2 {
+    font-size: clamp(1.35rem, 2.5vw, 1.7rem); font-weight: 800;
+    color: var(--primary-color); margin: 4px 0 14px;
+}
+section.card h3 { font-size: 1.08rem; color: var(--primary-color); margin: 22px 0 8px; }
+section.card p { margin-bottom: 12px; font-size: 1rem; }
+section.card ul, section.card ol { padding-left: 22px; margin-bottom: 14px; }
+section.card li { margin-bottom: 8px; }
+
+.analogy {
+    background: var(--gold-soft); border-left: 5px solid var(--gold);
+    border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 18px 0;
+}
+.analogy strong { color: #7A5C00; }
+
+.tip {
+    background: var(--secondary-tint); border-left: 5px solid var(--secondary-color);
+    border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 18px 0;
+}
+
+.credit {
+    background: #F8FAFC; border: 1.5px solid var(--line);
+    border-radius: 12px; padding: 12px 16px; margin-top: 18px;
+    font-size: .9rem; color: var(--text-muted);
+}
+.credit strong { color: var(--primary-color); }
+.credit a { color: var(--secondary-dark); }
+
+/* ---------- Interactive widgets ---------- */
+.widget {
+    border: 2px dashed var(--secondary-color); border-radius: 14px;
+    padding: 20px; margin-top: 18px; background: #FDFEFE;
+}
+.widget-title {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 800; color: var(--secondary-dark); font-size: 1rem;
+    margin-bottom: 10px;
+}
+.widget-title::before { content: '▶'; font-size: .75rem; }
+
+.choice-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 14px; }
+.choice-btn {
+    font-family: inherit; font-size: .95rem; font-weight: 700;
+    padding: 10px 18px; border-radius: 10px; cursor: pointer;
+    border: 2px solid var(--primary-color);
+    background: #fff; color: var(--primary-color);
+    transition: all .15s;
+}
+.choice-btn:hover { background: var(--secondary-tint); border-color: var(--secondary-color); color: var(--secondary-dark); }
+.choice-btn[aria-pressed="true"] { background: var(--primary-color); color: #fff; }
+
+.result-box {
+    border-radius: 10px; padding: 14px 16px; margin-top: 10px;
+    font-size: .98rem; border: 1.5px solid var(--line); background: #F8FAFC;
+}
+.result-box.good { background: var(--success-tint); border-color: #BBE5C8; color: var(--success); font-weight: 600; }
+.result-box.bad { background: var(--error-tint); border-color: #F4C7C7; color: var(--error); font-weight: 600; }
+.result-box.neutral { background: var(--gold-soft); border-color: var(--gold); color: #7A5C00; font-weight: 600; }
+
+.scenario-card {
+    border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 14px; background: #fff;
+}
+.scenario-card h4 { color: var(--primary-color); margin-bottom: 6px; font-size: 1rem; }
+
+/* ---------- Time budget inputs ---------- */
+.budget-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px; margin: 14px 0;
+}
+.budget-grid label { font-weight: 600; font-size: .92rem; display: block; }
+.budget-grid input {
+    width: 100%; margin-top: 5px; font-family: inherit; font-size: 1rem;
+    padding: 9px 11px; border: 1.5px solid var(--line); border-radius: 8px;
+}
+.budget-grid input:focus { border-color: var(--secondary-color); outline: none; box-shadow: 0 0 0 3px rgba(0,122,135,.15); }
+.hours-display {
+    font-size: 1.5rem; font-weight: 800; color: var(--primary-color);
+    margin-top: 6px;
+}
+
+/* ---------- SMART builder ---------- */
+.smart-checks { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+.smart-checks label {
+    display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+    padding: 8px 10px; border-radius: 8px; transition: background .15s;
+}
+.smart-checks label:hover { background: var(--secondary-tint); }
+.smart-checks input { margin-top: 4px; accent-color: var(--secondary-color); width: 18px; height: 18px; flex: none; }
+textarea {
+    width: 100%; font-family: inherit; font-size: 1rem; color: var(--text-dark);
+    border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px;
+    min-height: 70px; resize: vertical;
+}
+textarea:focus { border-color: var(--secondary-color); outline: none; box-shadow: 0 0 0 3px rgba(0,122,135,.15); }
+
+/* ---------- Quiz ---------- */
+fieldset { border: 1.5px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 18px; }
+legend { font-weight: 700; padding: 0 8px; color: var(--primary-color); }
+.radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.radio-group label {
+    display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+    padding: 8px 10px; border-radius: 8px; transition: background .15s;
+}
+.radio-group label:hover { background: var(--secondary-tint); }
+.radio-group input { margin-top: 4px; accent-color: var(--secondary-color); width: 18px; height: 18px; flex: none; }
+.q-feedback { font-size: .92rem; font-weight: 600; margin-top: 8px; display: none; }
+.q-feedback.show { display: block; }
+.q-feedback.correct { color: var(--success); }
+.q-feedback.incorrect { color: var(--error); }
+
+.btn-primary {
+    font-family: inherit; font-size: 1.02rem; font-weight: 700;
+    background: var(--primary-color); color: #fff;
+    border: none; border-radius: 12px; padding: 14px 28px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,45,98,.15); transition: all .2s;
+}
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary {
+    font-family: inherit; font-size: .95rem; font-weight: 700;
+    background: #fff; color: var(--secondary-dark);
+    border: 2px solid var(--secondary-color); border-radius: 12px;
+    padding: 11px 22px; cursor: pointer; transition: all .2s;
+}
+.btn-secondary:hover { background: var(--secondary-color); color: #fff; }
+
+.score-banner {
+    margin-top: 18px; border-radius: 12px; padding: 16px 20px;
+    font-weight: 700; font-size: 1.05rem; display: none;
+}
+.score-banner.show { display: block; }
+.score-banner.pass { background: var(--success-tint); color: var(--success); border: 2px solid #BBE5C8; }
+.score-banner.retry { background: var(--gold-soft); color: #7A5C00; border: 2px solid var(--gold); }
+
+/* ---------- References ---------- */
+.references p {
+    font-size: .92rem; color: var(--text-muted);
+    padding-left: 2em; text-indent: -2em; margin-bottom: 10px;
+}
+
+footer {
+    text-align: center; color: var(--text-muted); font-size: .9rem;
+    padding: 0 20px 44px;
+}
+footer a { color: var(--secondary-dark); font-weight: 600; }
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header>
+    <div class="masthead">
+        <span class="institution">Tarrant County College • Learning Commons</span>
+        <h1>Academic Coaching Hub <span class="spark">✦</span></h1>
+        <p class="tagline">College isn't just about learning content — it's about becoming the author of your own story. Work through these lessons to sharpen your goals, take charge of your time, and build the mindset that carries you to graduation.</p>
+    </div>
+    <nav aria-label="Lesson navigation">
+        <ul>
+            <li><a href="#lesson-1">1 · Author Your Story</a></li>
+            <li><a href="#lesson-2">2 · Goals That Work</a></li>
+            <li><a href="#lesson-3">3 · Own Your 168</a></li>
+            <li><a href="#lesson-4">4 · Mindset</a></li>
+            <li><a href="#quiz">Knowledge Check</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="progress-strip" role="status" aria-label="Your progress">
+    <div class="progress-inner">
+        <span>Your progress:</span>
+        <span class="progress-chip" id="chip-1"><span class="dot" aria-hidden="true"></span>Author</span>
+        <span class="progress-chip" id="chip-2"><span class="dot" aria-hidden="true"></span>Goals</span>
+        <span class="progress-chip" id="chip-3"><span class="dot" aria-hidden="true"></span>Time</span>
+        <span class="progress-chip" id="chip-4"><span class="dot" aria-hidden="true"></span>Mindset</span>
+        <span class="progress-chip" id="chip-quiz"><span class="dot" aria-hidden="true"></span>Quiz</span>
+    </div>
+</div>
+
+<main id="main-content">
+
+    <!-- ============ LESSON 1: SELF-AUTHORSHIP ============ -->
+    <section class="card" id="lesson-1" aria-labelledby="l1h">
+        <span class="lesson-label">Lesson 1</span>
+        <h2 id="l1h">Become the Author of Your Own Story</h2>
+        <p>Developmental psychologist Robert Kegan describes a powerful shift that happens as adults grow: moving from a <strong>socialized mind</strong> — where your choices are steered mostly by what others expect — toward a <strong>self-authoring mind</strong>, where you weigh those expectations against your own values and write your own script.</p>
+        <p>In college, this shift shows up everywhere. Did you pick your major, your schedule, your study habits — or did they get picked for you?</p>
+
+        <div class="analogy">
+            <strong>Real-world example:</strong> Think of your college journey like a video game. A socialized mind plays as an NPC — following whatever quest someone else assigns. A self-authoring mind plays as the <em>main character</em>: still listening to advice from the party, but deciding which quests align with the story they're building.
+        </div>
+
+        <div class="widget">
+            <span class="widget-title">Try it: Who's Writing Your Script?</span>
+            <div class="scenario-card">
+                <h4>Scenario: Your family expects you to major in nursing. You're drawn to computer science. Registration closes Friday.</h4>
+                <p>Which response sounds most like <em>self-authoring</em>?</p>
+                <div class="choice-row" role="group" aria-label="Choose the self-authoring response">
+                    <button type="button" class="choice-btn" data-auth="a">Register for nursing — they know best, and I don't want to disappoint anyone</button>
+                    <button type="button" class="choice-btn" data-auth="b">Register for CS secretly and avoid the conversation</button>
+                    <button type="button" class="choice-btn" data-auth="c">Examine why each path matters to me, talk with my family and an advisor, then choose based on my own values and evidence</button>
+                </div>
+                <div class="result-box" id="auth-result" aria-live="polite">Pick the response that fits best.</div>
+            </div>
+        </div>
+
+        <div class="tip">
+            <strong>Coaching connection:</strong> An academic coach at the Learning Commons can't write your story for you — but they're a great editor. Bring a decision you're wrestling with to a coaching session and practice thinking it through out loud.
+        </div>
+
+        <div class="credit">
+            <strong>Grounded in:</strong> This lesson adapts ideas from Robert Kegan's theory of adult development (Kegan, 1994). See the References section below for the full citation.
+        </div>
+
+        <p style="margin-top:18px;"><button type="button" class="btn-secondary" data-complete="1">Mark Lesson 1 complete ✓</button></p>
+    </section>
+
+    <!-- ============ LESSON 2: SMART GOALS ============ -->
+    <section class="card" id="lesson-2" aria-labelledby="l2h">
+        <span class="lesson-label">Lesson 2</span>
+        <h2 id="l2h">Set Goals That Actually Work</h2>
+        <p>"Do better this semester" isn't a goal — it's a wish. Effective goals are <strong>SMART</strong>: Specific, Measurable, Achievable, Relevant, and Time-bound. The difference between a wish and a SMART goal is the difference between hoping and planning.</p>
+        <ul>
+            <li><strong>S — Specific:</strong> What exactly will you do?</li>
+            <li><strong>M — Measurable:</strong> How will you know you did it?</li>
+            <li><strong>A — Achievable:</strong> Is it realistic given your life right now?</li>
+            <li><strong>R — Relevant:</strong> Does it connect to the story you're authoring?</li>
+            <li><strong>T — Time-bound:</strong> By when?</li>
+        </ul>
+
+        <div class="analogy">
+            <strong>Real-world example:</strong> A SMART goal is like a GPS destination. "Drive somewhere nice" gets you nowhere — the GPS needs an exact address, a route, and an arrival time. "Attend two tutoring sessions per week until my October exam" is an address your brain can navigate to.
+        </div>
+
+        <div class="widget">
+            <span class="widget-title">Try it: Spot the SMART Goal</span>
+            <p>Which of these is a complete SMART goal?</p>
+            <div class="choice-row" role="group" aria-label="Choose the SMART goal">
+                <button type="button" class="choice-btn" data-smart="a">I'll try harder in math</button>
+                <button type="button" class="choice-btn" data-smart="b">I'll complete 20 practice problems every Tuesday and Thursday in the Learning Commons until my November 15 exam</button>
+                <button type="button" class="choice-btn" data-smart="c">I'll become a straight-A student someday</button>
+            </div>
+            <div class="result-box" id="smart-result" aria-live="polite">Pick the goal that hits all five letters.</div>
+        </div>
+
+        <div class="widget">
+            <span class="widget-title">Try it: Build Your Own</span>
+            <label for="goal-draft" style="font-weight:600;">Draft one goal for this semester:</label>
+            <textarea id="goal-draft" placeholder="Example: I will attend SI sessions for Biology every Monday and review my notes for 30 minutes afterward, through finals week."></textarea>
+            <p style="margin-top:12px; font-weight:600;">Now audit it — check each box your goal honestly earns:</p>
+            <div class="smart-checks">
+                <label><input type="checkbox" class="smart-check"> <span><strong>Specific</strong> — names an exact action</span></label>
+                <label><input type="checkbox" class="smart-check"> <span><strong>Measurable</strong> — I could prove I did it</span></label>
+                <label><input type="checkbox" class="smart-check"> <span><strong>Achievable</strong> — realistic with my work and family commitments</span></label>
+                <label><input type="checkbox" class="smart-check"> <span><strong>Relevant</strong> — moves my bigger story forward</span></label>
+                <label><input type="checkbox" class="smart-check"> <span><strong>Time-bound</strong> — has a deadline or schedule</span></label>
+            </div>
+            <div class="result-box" id="smart-audit" aria-live="polite">Check the boxes to audit your draft.</div>
+        </div>
+
+        <div class="credit">
+            <strong>Grounded in:</strong> The SMART framework traces to management scholar George Doran (Doran, 1981). Full citation in References.
+        </div>
+
+        <p style="margin-top:18px;"><button type="button" class="btn-secondary" data-complete="2">Mark Lesson 2 complete ✓</button></p>
+    </section>
+
+    <!-- ============ LESSON 3: TIME ============ -->
+    <section class="card" id="lesson-3" aria-labelledby="l3h">
+        <span class="lesson-label">Lesson 3</span>
+        <h2 id="l3h">Own Your 168</h2>
+        <p>Everyone — every honor student, every struggling student, every CEO — gets exactly <strong>168 hours each week</strong>. Time management isn't about finding more time; it's about seeing honestly where yours goes and assigning it on purpose.</p>
+        <p>A reliable rule of thumb for college: plan <strong>2 to 3 hours of study per week for every credit hour</strong>. A 12-credit load means 24 to 36 study hours — a part-time job's worth.</p>
+
+        <div class="analogy">
+            <strong>Real-world example:</strong> Your week is a paycheck of 168 hours. Sleep, work, and class are your "bills" — fixed expenses that come out first. What's left is your discretionary income. Budget it on purpose, or it disappears on impulse purchases like four-hour scroll sessions.
+        </div>
+
+        <div class="widget">
+            <span class="widget-title">Try it: Your 168-Hour Budget</span>
+            <p>Enter your typical weekly hours. The calculator shows what's truly left for studying and living.</p>
+            <div class="budget-grid">
+                <label>Sleep (hrs/week)
+                    <input type="number" id="t-sleep" min="0" max="168" value="49" inputmode="numeric">
+                </label>
+                <label>Work (hrs/week)
+                    <input type="number" id="t-work" min="0" max="168" value="20" inputmode="numeric">
+                </label>
+                <label>Class time (hrs/week)
+                    <input type="number" id="t-class" min="0" max="168" value="12" inputmode="numeric">
+                </label>
+                <label>Commute (hrs/week)
+                    <input type="number" id="t-commute" min="0" max="168" value="5" inputmode="numeric">
+                </label>
+                <label>Family &amp; meals (hrs/week)
+                    <input type="number" id="t-family" min="0" max="168" value="20" inputmode="numeric">
+                </label>
+            </div>
+            <p class="hours-display" id="hours-left" aria-live="polite">62 hours remain</p>
+            <div class="result-box" id="hours-verdict" aria-live="polite"></div>
+        </div>
+
+        <div class="tip">
+            <strong>Technique to try:</strong> Work in focused sprints — for example, 25 minutes of distraction-free study followed by a 5-minute break, a pattern popularized by the Pomodoro Technique (Cirillo, 2018). Four sprints equal a solid two-hour study block.
+        </div>
+
+        <p style="margin-top:18px;"><button type="button" class="btn-secondary" data-complete="3">Mark Lesson 3 complete ✓</button></p>
+    </section>
+
+    <!-- ============ LESSON 4: MINDSET ============ -->
+    <section class="card" id="lesson-4" aria-labelledby="l4h">
+        <span class="lesson-label">Lesson 4</span>
+        <h2 id="l4h">Train a Growth Mindset</h2>
+        <p>Psychologist Carol Dweck's research distinguishes a <strong>fixed mindset</strong> — believing ability is a trait you either have or don't — from a <strong>growth mindset</strong> — understanding that ability develops through effort, strategy, and feedback (Dweck, 2006). Students who treat struggle as information, not verdict, persist longer and learn more.</p>
+
+        <div class="analogy">
+            <strong>Real-world example:</strong> Nobody walks into a gym, fails to lift 300 pounds, and concludes "I'm not a weights person." They start lighter and build. Your brain works the same way — a hard calculus problem is a heavy rep, not a verdict on who you are.
+        </div>
+
+        <div class="widget">
+            <span class="widget-title">Try it: Reframe the Thought</span>
+            <p>For each thought, decide: <strong>fixed</strong> or <strong>growth</strong>?</p>
+
+            <div class="scenario-card">
+                <h4>"I failed the quiz — I'm just not a math person."</h4>
+                <div class="choice-row" role="group" aria-label="Classify thought one">
+                    <button type="button" class="choice-btn" data-mind="1" data-type="fixed">Fixed</button>
+                    <button type="button" class="choice-btn" data-mind="1" data-type="growth">Growth</button>
+                </div>
+                <div class="result-box" id="mind-result-1" aria-live="polite" hidden></div>
+            </div>
+
+            <div class="scenario-card">
+                <h4>"That essay grade stung. I'm booking a writing tutor to figure out what to change for the next one."</h4>
+                <div class="choice-row" role="group" aria-label="Classify thought two">
+                    <button type="button" class="choice-btn" data-mind="2" data-type="fixed">Fixed</button>
+                    <button type="button" class="choice-btn" data-mind="2" data-type="growth">Growth</button>
+                </div>
+                <div class="result-box" id="mind-result-2" aria-live="polite" hidden></div>
+            </div>
+
+            <div class="scenario-card">
+                <h4>"Everyone else codes faster than me, so I should probably drop the class."</h4>
+                <div class="choice-row" role="group" aria-label="Classify thought three">
+                    <button type="button" class="choice-btn" data-mind="3" data-type="fixed">Fixed</button>
+                    <button type="button" class="choice-btn" data-mind="3" data-type="growth">Growth</button>
+                </div>
+                <div class="result-box" id="mind-result-3" aria-live="polite" hidden></div>
+            </div>
+        </div>
+
+        <div class="tip">
+            <strong>The magic word:</strong> Add "yet" to fixed thoughts. "I can't do this" becomes "I can't do this <em>yet</em>" — a sentence with a future in it.
+        </div>
+
+        <div class="credit">
+            <strong>Grounded in:</strong> Carol Dweck's mindset research (Dweck, 2006). Full citation in References.
+        </div>
+
+        <p style="margin-top:18px;"><button type="button" class="btn-secondary" data-complete="4">Mark Lesson 4 complete ✓</button></p>
+    </section>
+
+    <!-- ============ QUIZ ============ -->
+    <section class="card" id="quiz" aria-labelledby="quizh">
+        <span class="lesson-label">Assessment</span>
+        <h2 id="quizh">Knowledge Check</h2>
+        <p>Five questions across all four lessons. Instant feedback, unlimited retakes.</p>
+
+        <form id="quiz-form" novalidate>
+            <fieldset>
+                <legend>1. A "self-authoring" approach to a big decision means:</legend>
+                <div class="radio-group">
+                    <label><input type="radio" name="q1" value="a"> Doing whatever important people in your life expect</label>
+                    <label><input type="radio" name="q1" value="b"> Ignoring everyone's advice completely</label>
+                    <label><input type="radio" name="q1" value="c"> Weighing others' expectations against your own values, then deciding deliberately</label>
+                </div>
+                <p class="q-feedback" id="fb-q1" aria-live="polite"></p>
+            </fieldset>
+
+            <fieldset>
+                <legend>2. Which goal is SMART?</legend>
+                <div class="radio-group">
+                    <label><input type="radio" name="q2" value="a"> "I'll review my psychology flashcards for 20 minutes every weekday until the December 5 final"</label>
+                    <label><input type="radio" name="q2" value="b"> "I'll study more"</label>
+                    <label><input type="radio" name="q2" value="c"> "I'll stop procrastinating forever"</label>
+                </div>
+                <p class="q-feedback" id="fb-q2" aria-live="polite"></p>
+            </fieldset>
+
+            <fieldset>
+                <legend>3. Taking 12 credit hours, roughly how much weekly study time should you plan?</legend>
+                <div class="radio-group">
+                    <label><input type="radio" name="q3" value="a"> 2 to 5 hours</label>
+                    <label><input type="radio" name="q3" value="b"> 24 to 36 hours</label>
+                    <label><input type="radio" name="q3" value="c"> Studying is only needed before exams</label>
+                </div>
+                <p class="q-feedback" id="fb-q3" aria-live="polite"></p>
+            </fieldset>
+
+            <fieldset>
+                <legend>4. "I bombed the first exam, so I'm changing my study strategy and visiting SI sessions" reflects:</legend>
+                <div class="radio-group">
+                    <label><input type="radio" name="q4" value="a"> A fixed mindset</label>
+                    <label><input type="radio" name="q4" value="b"> A growth mindset</label>
+                    <label><input type="radio" name="q4" value="c"> Giving up</label>
+                </div>
+                <p class="q-feedback" id="fb-q4" aria-live="polite"></p>
+            </fieldset>
+
+            <fieldset>
+                <legend>5. The Pomodoro-style study sprint described in Lesson 3 is:</legend>
+                <div class="radio-group">
+                    <label><input type="radio" name="q5" value="a"> 25 minutes of focused work, then a 5-minute break</label>
+                    <label><input type="radio" name="q5" value="b"> Studying 8 hours straight the night before</label>
+                    <label><input type="radio" name="q5" value="c"> Multitasking across three assignments at once</label>
+                </div>
+                <p class="q-feedback" id="fb-q5" aria-live="polite"></p>
+            </fieldset>
+
+            <button type="button" class="btn-primary" id="grade-btn">Check my answers</button>
+            <button type="button" class="btn-secondary" id="reset-quiz" style="margin-left:10px;">Start over</button>
+        </form>
+        <div class="score-banner" id="score-banner" role="status"></div>
+    </section>
+
+    <!-- ============ REFERENCES ============ -->
+    <section class="card references" aria-labelledby="refh">
+        <span class="lesson-label">Scholarship Behind This Hub</span>
+        <h2 id="refh">References</h2>
+        <p>Cirillo, F. (2018). <em>The Pomodoro Technique: The acclaimed time-management system that has transformed how we work</em>. Currency.</p>
+        <p>Doran, G. T. (1981). There's a S.M.A.R.T. way to write management's goals and objectives. <em>Management Review, 70</em>(11), 35–36.</p>
+        <p>Dweck, C. S. (2006). <em>Mindset: The new psychology of success</em>. Random House.</p>
+        <p>Kegan, R. (1994). <em>In over our heads: The mental demands of modern life</em>. Harvard University Press.</p>
+        <p style="text-indent:0; padding-left:0; margin-top:16px;">Content on this page summarizes and adapts ideas from these works for educational purposes. Please consult the original sources for the complete frameworks.</p>
+    </section>
+
+</main>
+
+<footer>
+    <p>TCC Learning Commons · Academic Coaching Hub · Designed for WCAG 2.1 AA accessibility</p>
+    <p><a href="index.html">← Back to main page</a> · <a href="infolit.html">AI InfoLit Hub</a></p>
+</footer>
+
+<script>
+(function () {
+    /* ---------- Progress tracking ---------- */
+    function markDone(key) {
+        var chip = document.getElementById('chip-' + key);
+        if (chip && !chip.classList.contains('done')) {
+            chip.classList.add('done');
+            chip.insertAdjacentText('beforeend', ' ✓');
+        }
+    }
+    document.querySelectorAll('[data-complete]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            markDone(btn.getAttribute('data-complete'));
+            btn.textContent = 'Completed ✓';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+        });
+    });
+
+    /* ---------- Lesson 1: Self-authoring scenario ---------- */
+    var authMessages = {
+        'a': { cls: 'neutral', text: 'That\u2019s the socialized mind at the wheel — letting others\u2019 expectations decide for you. Their input matters, but it\u2019s one voice in the room, not the verdict.' },
+        'b': { cls: 'neutral', text: 'Avoiding the conversation isn\u2019t self-authorship — it\u2019s dodging the hard part. Self-authoring means engaging the expectations, not hiding from them.' },
+        'c': { cls: 'good', text: 'That\u2019s self-authoring: you take in others\u2019 perspectives, test them against your own values and evidence, and then make the call as the main character of your story.' }
+    };
+    document.querySelectorAll('[data-auth]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var m = authMessages[btn.getAttribute('data-auth')];
+            var box = document.getElementById('auth-result');
+            box.textContent = m.text;
+            box.className = 'result-box ' + m.cls;
+        });
+    });
+
+    /* ---------- Lesson 2: Spot the SMART goal ---------- */
+    var smartMessages = {
+        'a': { cls: 'bad', text: 'A wish, not a goal — no specifics, no measure, no deadline. What does "harder" look like on a Tuesday?' },
+        'b': { cls: 'good', text: 'All five letters: specific action, measurable count, achievable pace, relevant to the exam, and time-bound to November 15. This goal has a GPS address.' },
+        'c': { cls: 'bad', text: '"Someday" is where goals go to nap. There\u2019s no specific action, no measure, and no clock.' }
+    };
+    document.querySelectorAll('[data-smart]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var m = smartMessages[btn.getAttribute('data-smart')];
+            var box = document.getElementById('smart-result');
+            box.textContent = m.text;
+            box.className = 'result-box ' + m.cls;
+        });
+    });
+
+    /* ---------- Lesson 2: SMART audit ---------- */
+    document.querySelectorAll('.smart-check').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+            var n = document.querySelectorAll('.smart-check:checked').length;
+            var box = document.getElementById('smart-audit');
+            if (n === 5) {
+                box.className = 'result-box good';
+                box.textContent = 'All five — that\u2019s a fully SMART goal. Write it somewhere you\u2019ll see it daily, and consider sharing it with an academic coach for accountability.';
+            } else if (n > 0) {
+                box.className = 'result-box neutral';
+                box.textContent = n + ' of 5 so far. Revise your draft to earn the missing letters — usually the fix is adding a number or a date.';
+            } else {
+                box.className = 'result-box';
+                box.textContent = 'Check the boxes to audit your draft.';
+            }
+        });
+    });
+
+    /* ---------- Lesson 3: 168-hour budget ---------- */
+    var inputs = ['t-sleep', 't-work', 't-class', 't-commute', 't-family'];
+    function updateBudget() {
+        var used = 0;
+        inputs.forEach(function (id) {
+            var v = parseFloat(document.getElementById(id).value);
+            if (!isNaN(v) && v >= 0) used += v;
+        });
+        var left = 168 - used;
+        var display = document.getElementById('hours-left');
+        var verdict = document.getElementById('hours-verdict');
+        if (left < 0) {
+            display.textContent = 'Over by ' + Math.abs(left) + ' hours';
+            verdict.className = 'result-box bad';
+            verdict.textContent = 'Your week is overdrawn — these commitments exceed 168 hours. Something has to give before studying can fit. This is exactly the conversation to bring to an academic coach.';
+        } else {
+            display.textContent = left + ' hours remain';
+            if (left >= 30) {
+                verdict.className = 'result-box good';
+                verdict.textContent = 'Room to work with! A 12-credit load needs roughly 24 to 36 study hours. Block specific study times now, before the week spends them for you.';
+            } else if (left >= 15) {
+                verdict.className = 'result-box neutral';
+                verdict.textContent = 'It\u2019s tight. You can fund part-time study hours, but every block must be scheduled and protected. Consider whether your course load matches your real week.';
+            } else {
+                verdict.className = 'result-box bad';
+                verdict.textContent = 'Very little remains for studying. That\u2019s not a character flaw — it\u2019s math. Talk with an advisor or coach about load, scheduling, or support options before the semester decides for you.';
+            }
+        }
+    }
+    inputs.forEach(function (id) {
+        document.getElementById(id).addEventListener('input', updateBudget);
+    });
+    updateBudget();
+
+    /* ---------- Lesson 4: Mindset sorter ---------- */
+    var mindKey = { '1': 'fixed', '2': 'growth', '3': 'fixed' };
+    var mindFeedback = {
+        '1': { right: 'Correct — "not a math person" treats ability as a fixed trait. Reframe: "My current strategy didn\u2019t work — what will I try differently?"',
+               wrong: 'Look again: declaring yourself "not a math person" treats ability as permanent. That\u2019s the fixed-mindset signature.' },
+        '2': { right: 'Correct — using the setback as information and seeking feedback is growth mindset in action.',
+               wrong: 'Actually, this one is growth: the student treats the grade as data and takes a concrete improvement step.' },
+        '3': { right: 'Correct — comparing speed and concluding you don\u2019t belong is fixed thinking. Pace of learning isn\u2019t a verdict. Reframe: "I can\u2019t code that fast yet."',
+               wrong: 'This one is fixed: it turns a comparison into a verdict about belonging. Add the word "yet" and watch it transform.' }
+    };
+    document.querySelectorAll('[data-mind]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var id = btn.getAttribute('data-mind');
+            var isRight = btn.getAttribute('data-type') === mindKey[id];
+            var box = document.getElementById('mind-result-' + id);
+            box.hidden = false;
+            box.textContent = isRight ? mindFeedback[id].right : mindFeedback[id].wrong;
+            box.className = 'result-box ' + (isRight ? 'good' : 'bad');
+        });
+    });
+
+    /* ---------- Quiz ---------- */
+    var answerKey = { q1: 'c', q2: 'a', q3: 'b', q4: 'b', q5: 'a' };
+    var explanations = {
+        q1: { right: 'Correct — self-authoring engages others\u2019 views, then decides from your own values.', wrong: 'Self-authoring isn\u2019t obeying or ignoring others — it\u2019s weighing their input against your own values, then deciding.' },
+        q2: { right: 'Correct — specific, measurable, achievable, relevant, and anchored to December 5.', wrong: 'Look for all five letters: the flashcard goal names the action, the measure, the schedule, and the deadline.' },
+        q3: { right: 'Correct — 2 to 3 hours per credit hour means 24 to 36 hours for 12 credits.', wrong: 'The rule of thumb is 2 to 3 study hours per credit: 12 credits means 24 to 36 hours weekly.' },
+        q4: { right: 'Correct — adjusting strategy after a setback is the heart of growth mindset.', wrong: 'Changing strategy and seeking support after a setback is growth mindset in action.' },
+        q5: { right: 'Correct — 25 minutes focused, 5-minute break. Four rounds make a strong study block.', wrong: 'The sprint pattern is 25 minutes of focus followed by a 5-minute break.' }
+    };
+
+    document.getElementById('grade-btn').addEventListener('click', function () {
+        var score = 0, answered = 0;
+        Object.keys(answerKey).forEach(function (q) {
+            var sel = document.querySelector('input[name="' + q + '"]:checked');
+            var fb = document.getElementById('fb-' + q);
+            if (!sel) { fb.className = 'q-feedback show incorrect'; fb.textContent = 'Please choose an answer.'; return; }
+            answered++;
+            var right = sel.value === answerKey[q];
+            if (right) score++;
+            fb.className = 'q-feedback show ' + (right ? 'correct' : 'incorrect');
+            fb.textContent = right ? explanations[q].right : explanations[q].wrong;
+        });
+
+        var banner = document.getElementById('score-banner');
+        if (answered < 5) {
+            banner.className = 'score-banner show retry';
+            banner.textContent = 'Answer all five questions to see your score.';
+            return;
+        }
+        if (score === 5) {
+            banner.className = 'score-banner show pass';
+            banner.textContent = '🎉 Perfect 5/5 — main character energy. Bring this momentum to a coaching session!';
+        } else if (score >= 3) {
+            banner.className = 'score-banner show pass';
+            banner.textContent = 'You scored ' + score + '/5 — strong work. Review the feedback above and level up the ones you missed.';
+        } else {
+            banner.className = 'score-banner show retry';
+            banner.textContent = 'You scored ' + score + '/5. Revisit the lessons and try again — growth mindset says this score isn\u2019t a verdict, it\u2019s a starting point.';
+        }
+        markDone('quiz');
+    });
+
+    document.getElementById('reset-quiz').addEventListener('click', function () {
+        document.getElementById('quiz-form').querySelectorAll('input[type=radio]').forEach(function (r) { r.checked = false; });
+        document.querySelectorAll('.q-feedback').forEach(function (f) { f.className = 'q-feedback'; f.textContent = ''; });
+        var banner = document.getElementById('score-banner');
+        banner.className = 'score-banner';
+        banner.textContent = '';
+    });
+})();
+</script>
+
+</body>
+</html>
