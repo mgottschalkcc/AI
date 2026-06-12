@@ -135,6 +135,13 @@
             font-style: italic;
         }
 
+        /* Button Group */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
         /* Call To Action Button (Level Up Link) */
         .btn-levelup {
             display: inline-block;
@@ -159,6 +166,33 @@
         .btn-levelup:active {
             transform: translateY(1px);
             box-shadow: 0 2px 6px rgba(0, 45, 98, 0.15);
+        }
+
+        /* Secondary Action Button (Lesson Prompt Builder) */
+        .btn-builder {
+            display: inline-block;
+            width: 100%;
+            background-color: #FFFFFF;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 13px 28px;
+            border-radius: 12px;
+            border: 2px solid var(--secondary-color);
+            transition: all 0.2s ease;
+        }
+
+        .btn-builder:hover {
+            background-color: var(--secondary-color);
+            color: #FFFFFF;
+            box-shadow: 0 6px 16px rgba(0, 122, 135, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-builder:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 6px rgba(0, 122, 135, 0.15);
         }
 
         /* Touch target adjustments & responsiveness */
@@ -193,8 +227,11 @@
             Welcome to my professional portal.
         </div>
 
-        <!-- Action Link to Level Up page -->
-        <a href="levelup.html" class="btn-levelup">Explore Level Up Program</a>
+        <!-- Action Links -->
+        <div class="btn-group">
+            <a href="levelup.html" class="btn-levelup">Explore Level Up Program</a>
+            <a href="lesson-prompt-generator.html" class="btn-builder">Open the Lesson Prompt Builder</a>
+        </div>
     </main>
 
     <script>
