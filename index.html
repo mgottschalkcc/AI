@@ -1,181 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Academic Support Prompt Generator</title>
-<style>
-/* ---------- Header ---------- */ 
-header { border-bottom:3px solid var(--ink); background:var(--card); padding:28px clamp(20px,4vw,48px) 24px; } 
-.masthead { max-width:1320px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:flex-end; gap:18px; justify-content:space-between; } 
-.masthead h1 { font-family:var(--font-display); font-weight:700; font-size:clamp(26px,3.4vw,38px); line-height:1.1; } 
-.masthead h1 .hl { background:linear-gradient(transparent 58%, var(--highlight) 58%); padding:0 2px; } 
-.masthead .sub { color:var(--slate); font-size:15px; max-width:560px; } 
-.ada-badge { display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff; font-size:13px; font-weight:600; letter-spacing:.02em; padding:8px 14px; border-radius:999px; white-space:nowrap; } 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Gottschalk | Dean, Tarrant County College</title>
+    <style>
+        /* Modern Design System Tokens */
+        :root {
+            --primary-color: #002D62; /* TCC Deep Blue */
+            --secondary-color: #007A87; /* Professional Teal Accent */
+            --text-dark: #1E293B; /* Slate 800 */
+            --text-muted: #64748B; /* Slate 500 */
+            --bg-gradient-start: #F8FAFC; /* Slate 50 */
+            --bg-gradient-end: #F1F5F9; /* Slate 100 */
+            --card-bg: #FFFFFF;
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
 
-/* ---------- Layout ---------- */ 
-:root { --ink: #111827; --card: #ffffff; --line: #e5e7eb; --highlight: #fef08a; --highlight-soft: #fefce8; --teal: #0d9488; --slate: #64748b; --radius: 12px; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --font-display: system-ui, sans-serif; --font-body: system-ui, sans-serif; --font-mono: monospace; }
-body { background-color: #f9fafb; margin: 0; font-family: var(--font-body); color: var(--ink); }
-.wrap { max-width:1320px; margin:0 auto; display:grid; grid-template-columns:minmax(0,7fr) minmax(0,6fr); gap:32px; padding:32px clamp(20px,4vw,48px) 64px; align-items:start; } 
-@media (max-width:980px){ .wrap{grid-template-columns:1fr;} .preview-col{position:static !important;} }
+        /* Base Resets */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-/* ---------- Form ---------- */ 
-.step { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px; margin-bottom:20px; } 
-.step-head { display:flex; align-items:baseline; gap:12px; margin-bottom:6px; } 
-.step-head h2 { font-family:var(--font-display); font-size:20px; font-weight:600; margin: 0;} 
-label.field-label { display:block; font-weight:600; font-size:14px; margin:14px 0 6px; } 
-label.field-label:first-of-type { margin-top:10px; } 
-input[type=text], textarea { width:100%; box-sizing: border-box; font-family:var(--font-body); font-size:15px; color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:8px; padding:10px 12px; transition:border-color .15s; } 
-textarea { resize:vertical; min-height:84px; } 
-input:focus, textarea:focus { border-color:var(--teal); outline:none; box-shadow:0 0 0 3px rgba(13,148,136,.15); } 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
 
-/* pill checkboxes */ 
-.pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; } 
-.pill { position:relative; } 
-.pill input { position:absolute; opacity:0; width:100%; height:100%; cursor:pointer; } 
-.pill span { display:inline-block; border:1.5px solid var(--line); border-radius:999px; padding:7px 14px; font-size:14px; font-weight:600; background:#fff; cursor:pointer; transition:all .15s; user-select:none; } 
-.pill input:checked + span { background:var(--ink); border-color:var(--ink); color:#fff; } 
-.pill input:focus-visible + span { outline:3px solid var(--teal); outline-offset:2px; } 
+        /* Card Container Styles */
+        .profile-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
 
-.ada-note { display:flex; gap:10px; align-items:flex-start; background:var(--highlight-soft); border:1.5px solid #E8D26A; border-radius:8px; padding:12px 14px; font-size:14px; color:#5C4D0A; margin-top:14px; } 
-.ada-note strong { color:#4A3E06; } 
+        .profile-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
 
-.actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:20px; } 
-button { font-family:var(--font-body); font-size:15px; font-weight:700; border-radius:8px; padding:12px 22px; cursor:pointer; border:2px solid var(--ink); transition:all .15s; } 
-.btn-primary { background:var(--ink); color:#fff; } 
-.btn-primary:hover { background:#26375C; } 
+        /* Academic Accent Top Bar */
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
 
-/* ---------- Preview ---------- */ 
-.preview-col { position:sticky; top:24px; } 
-.preview-card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; } 
-.preview-bar { display:flex; align-items:center; justify-content:space-between; background:var(--ink); color:#fff; padding:12px 18px; } 
-.preview-bar h2 { font-size:17px; margin: 0; } 
-.copy-btn { background:var(--highlight); color:var(--ink); border:none; padding:8px 16px; border-radius:6px; font-size: 14px;} 
-.copy-btn:hover { background:#FFD91A; } 
-.preview-body { font-family:var(--font-mono); font-size:14px; line-height:1.65; padding:20px 22px; white-space:pre-wrap; max-height:72vh; overflow-y:auto; color:#374151; } 
-</style>
+        /* Profile Avatar Placeholder Icon (Academic / Leadership representation) */
+        .avatar-container {
+            width: 80px;
+            height: 80px;
+            background-color: #F1F5F9;
+            border-radius: 50%;
+            margin: 0 auto 24px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+
+        .avatar-container svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Institution Badge */
+        .institution {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        /* Name Typography */
+        h1 {
+            font-size: 2.25rem;
+            color: var(--primary-color);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        /* Job Position */
+        .position {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        /* Graphic Divider */
+        .divider {
+            width: 48px;
+            height: 3px;
+            background-color: var(--secondary-color);
+            margin: 0 auto 28px auto;
+            border-radius: 2px;
+        }
+
+        /* Dynamic Greeting Container */
+        .dynamic-greeting {
+            background-color: #F8FAFC;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 28px;
+            border: 1px solid #E2E8F0;
+            font-style: italic;
+        }
+
+        /* Button Group */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Call To Action Button (Level Up Link) */
+        .btn-levelup {
+            display: inline-block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 14px 28px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 45, 98, 0.15);
+        }
+
+        .btn-levelup:hover {
+            background-color: #001F42;
+            box-shadow: 0 6px 16px rgba(0, 45, 98, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-levelup:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 6px rgba(0, 45, 98, 0.15);
+        }
+
+        /* Secondary Action Button (Lesson Prompt Builder) */
+        .btn-builder {
+            display: inline-block;
+            width: 100%;
+            background-color: #FFFFFF;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 13px 28px;
+            border-radius: 12px;
+            border: 2px solid var(--secondary-color);
+            transition: all 0.2s ease;
+        }
+
+        .btn-builder:hover {
+            background-color: var(--secondary-color);
+            color: #FFFFFF;
+            box-shadow: 0 6px 16px rgba(0, 122, 135, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-builder:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 6px rgba(0, 122, 135, 0.15);
+        }
+
+        /* Touch target adjustments & responsiveness */
+        @media (max-width: 480px) {
+            .profile-card {
+                padding: 32px 24px;
+            }
+            h1 {
+                font-size: 1.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="masthead">
-    <h1><span class="hl">Academic Support</span> Lesson Generator</h1>
-    <div class="ada-badge">WCAG 2.1 AA Compliant Prompts</div>
-  </div>
-</header>
+    <main class="profile-card">
+        <!-- Academic Crest/Avatar representation -->
+        <div class="avatar-container">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84a50.578 50.578 0 0 0-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+            </svg>
+        </div>
 
-<div class="wrap">
-  <!-- Input Form Column -->
-  <div class="form-col">
-    <div class="step">
-      <div class="step-head"><h2>Core Lesson Details</h2></div>
-      
-      <label class="field-label">Learning Objectives</label>
-      <textarea id="objectives" placeholder="e.g., Evaluate credible sources, synthesize information..."></textarea>
+        <span class="institution">Tarrant County College</span>
+        <h1>Mark Gottschalk</h1>
+        <p class="position">Dean</p>
 
-      <label class="field-label">Topics Covered</label>
-      <textarea id="topics" placeholder="e.g., Database searching, boolean operators, peer review..."></textarea>
+        <div class="divider"></div>
 
-      <label class="field-label">Key Terms</label>
-      <input type="text" id="terms" placeholder="e.g., CRAAP test, scholarly journals, citations">
+        <!-- Dynamic Greeting powered by Javascript -->
+        <div id="greeting-banner" class="dynamic-greeting">
+            Welcome to my professional portal.
+        </div>
 
-      <label class="field-label">Audience</label>
-      <input type="text" id="audience" placeholder="e.g., First-year community college students" value="Community College Students">
-    </div>
+        <!-- Action Links -->
+        <div class="btn-group">
+            <a href="levelup.html" class="btn-levelup">Explore Level Up Program</a>
+            <a href="lesson-prompt-generator.html" class="btn-builder">Open the Lesson Prompt Builder</a>
+            <a href="infolit.html" class="btn-builder">Academic Support Lesson Generator</a>
+        </div>
+    </main>
 
-    <div class="step">
-      <div class="step-head"><h2>Pedagogy & Structure</h2></div>
-      
-      <label class="field-label">Type of Activities</label>
-      <div class="pills" id="activities">
-        <label class="pill"><input type="checkbox" value="interactive learning activities"><span>Interactive</span></label>
-        <label class="pill"><input type="checkbox" value="team projects"><span>Team Projects</span></label>
-        <label class="pill"><input type="checkbox" value="case studies"><span>Case Studies</span></label>
-        <label class="pill"><input type="checkbox" value="labs"><span>Labs</span></label>
-        <label class="pill"><input type="checkbox" value="assessments"><span>Assessments</span></label>
-        <label class="pill"><input type="checkbox" value="active learning"><span>Active Learning</span></label>
-      </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const greetingElement = document.getElementById('greeting-banner');
+            const hour = new Date().getHours();
+            let greetingTime = 'Welcome';
 
-      <label class="field-label" style="margin-top: 20px; display: flex; align-items: center; gap: 8px;">
-        <input type="checkbox" id="analogies" checked style="width: auto;"> 
-        Include analogies and real-world examples
-      </label>
+            if (hour < 12) {
+                greetingTime = 'Good morning';
+            } else if (hour < 17) {
+                greetingTime = 'Good afternoon';
+            } else {
+                greetingTime = 'Good evening';
+            }
 
-      <div class="ada-note">
-        <strong>ADA Compliance:</strong> The prompt will automatically instruct the AI to align its output with ADA Title II digital accessibility mandates (WCAG 2.1 Level AA).
-      </div>
-
-      <div class="actions">
-        <button class="btn-primary" onclick="generatePrompt()">Generate Prompt</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Output/Preview Column -->
-  <div class="preview-col">
-    <div class="preview-card">
-      <div class="preview-bar">
-        <h2>Generated Prompt</h2>
-        <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">Copy</button>
-      </div>
-      <div class="preview-body" id="output">Fill out the form on the left and click "Generate Prompt" to see your AI prompt here.</div>
-    </div>
-  </div>
-</div>
-
-<script>
-function generatePrompt() {
-  const obj = document.getElementById('objectives').value || '[Insert Objectives]';
-  const topics = document.getElementById('topics').value || '[Insert Topics]';
-  const terms = document.getElementById('terms').value || '[Insert Key Terms]';
-  const audience = document.getElementById('audience').value || '[Insert Audience]';
-
-  // Gather checked activities
-  const checkboxes = document.querySelectorAll('#activities input:checked');
-  let activities = Array.from(checkboxes).map(cb => cb.value).join(', ');
-  if (!activities) activities = 'a mix of active learning strategies';
-
-  // Handle analogies checkbox
-  const includeAnalogies = document.getElementById('analogies').checked 
-    ? "\n- Incorporate highly relatable analogies and real-world examples tailored to the experiences of this specific audience." 
-    : "";
-
-  // Construct the prompt
-  const promptText = `Act as an award-winning community college instructor and academic support educator. Create a comprehensive, engaging lesson plan and learning session based on the following parameters:
-
-**Audience:** ${audience}
-**Learning Objectives:** ${obj}
-**Topics Covered:** ${topics}
-**Key Terms to Define:** ${terms}
-**Required Activities:** Please include ${activities}. ${includeAnalogies}
-
-**Accessibility & Formatting Requirements:** 
-Ensure the lesson format and all suggested digital materials strictly maintain ADA compliance, specifically adhering to WCAG 2.1 Level AA standards. Explicitly include instructions for:
-- Providing alternative text for any suggested images or graphs.
-- Maintaining logical, nested heading structures (H1, H2, H3).
-- Ensuring color contrast and readable formatting for any digital handouts.`;
-
-  document.getElementById('output').innerText = promptText;
-}
-
-function copyPrompt() {
-  const text = document.getElementById('output').innerText;
-  if (text.includes("Fill out the form")) return; // Don't copy placeholder
-  
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.innerText = 'Copied!';
-    btn.style.backgroundColor = 'var(--teal)';
-    btn.style.color = '#fff';
-    
-    setTimeout(() => {
-      btn.innerText = 'Copy';
-      btn.style.backgroundColor = 'var(--highlight)';
-      btn.style.color = 'var(--ink)';
-    }, 2000);
-  });
-}
-</script>
-
+            // Interactive personalized dynamic message
+            greetingElement.textContent = `✨ ${greetingTime}! Welcome to my professional portal.`;
+        });
+    </script>
 </body>
 </html>
