@@ -1,1 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Up: The Main Character Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0066FF;
+            --primary-yellow: #FFD700;
+            --primary-pink: #FF1493;
+            --dark-bg: #0f172a;
+        }
 
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark-bg);
+            color: white;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)),
+                url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+        }
+
+        .font-retro {
+            font-family: 'Press Start 2P', cursive;
+            line-height: 1.5;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Retro button styling */
+        .btn-retro {
+            background-color: var(--primary-yellow);
+            color: black;
+            border: 4px solid white;
+            box-shadow: 4px 4px 0px var(--primary-pink);
+            transition: all 0.1s;
+            text-transform: uppercase;
+        }
+
+        .btn-retro:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--primary-pink);
+        }
+        
+        .btn-retro:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--primary-pink);
+        }
+
+        .btn-blue {
+            background-color: var(--primary-blue);
+            color: white;
+            box-shadow: 4px 4px 0px #000;
+            border-color: #000;
+        }
+
+        /* Pixel border container */
+        .pixel-box {
+            border: 4px solid white;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.5);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Scanline effect overlay */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.3;
+        }
+
+        /* XP Bar */
+        .xp-fill {
+            transition: width 0.5s ease-out;
+        }
+
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Level Cards */
+        .level-card {
+            filter: grayscale(100%);
+            opacity: 0.5;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .level-card.unlocked {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: var(--primary-yellow);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative pb-10">
+    <div class="scanlines"></div>
+
+    <!-- HUD (Heads Up Display) -->
+    <header class="fixed top-0 left-0 w-full p-4 z-40 bg-slate-900 border-b-4 border-white flex justify-between items-center shadow-lg">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl border-4 border-yellow-400">
+                ⭐
+            </div>
+            <div>
+                <h1 class="font-retro text-xs md:text-sm text-yellow-400">PLAYER 1: EDUCATOR</h1>
+                <p class="text-xs text-gray-300">Texas Community College</p>
+            </div>
+        </div>
+        <div class="w-1/3 min-w-[150px]">
+            <div class="flex justify-between text-xs font-retro mb-1">
+                <span class="text-green-400">XP</span>
+                <span id="xp-text">0 / 2000</span>
+            </div>
+            <div class="h-4 bg-gray-800 border-2 border-white w-full rounded p-0.5">
+                <div id="xp-bar" class="h-full bg-green-500 xp-fill w-0"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow pt-24 px-4 flex items-center justify-center w-full max-w-5xl mx-auto z-10">
+        
+        <!-- SCREEN 0: START -->
+        <section id="screen-start" class="screen active flex-col items-center text-center w-full mt-10">
+            <div class="pixel-box p-8 md:p-12 w-full max-w-3xl flex flex-col items-center relative overflow-hidden border-yellow-400">
+                <div class="absolute -top-10 -right-10 text-9xl opacity-20 transform rotate-12">🎮</div>
+                <h2 class="text-2xl md:text-4xl font-black italic mb-2 tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-500">
+                    THE MAIN CHARACTER PROJECT
+                </h2>
+                <h1 class="font-retro text-5xl md:text-7xl text-yellow-400 mb-6 tracking-tighter" style="text-shadow: 4px 4px 0px #FF1493;">
+                    LEVEL UP!
+                </h1>
+                
+                <p class="text-lg md:text-xl mb-8 max-w-2xl leading-relaxed">
+                    Howdy Sharks! Welcome to our large urban Texas Community College. 
+                    <br><br>
+                    Every year, thousands of students walk through our doors waiting to be told what to do. Today, we're going to transform them from NPCs (Non-Playable Characters) into the <strong class="text-yellow-400">Main Characters</strong> of their own lives.
+                </p>
+
+                <div class="flex gap-4 font-bold text-xl mb-10 text-pink-400 italic">
+                    <span>BELIEVE.</span> <span>BUILD.</span> <span>BECOME.</span> <span class="text-yellow-400">YOU.</span>
+                </div>
+
+                <button onclick="startGame()" class="btn-retro font-retro px-8 py-4 text-xl md:text-2xl animate-pulse">
+                    PRESS START
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 1: THEORY MINIGAME -->
+        <section id="screen-theory" class="screen flex-col items-center w-full">
+            <div class="text-center mb-6">
+                <h2 class="font-retro text-xl md:text-2xl text-yellow-400 mb-2">STAGE 1: THE MINDSET</h2>
+                <p class="max-w-2xl mx-auto">Based on Robert Kegan's Theory of the Evolution of Consciousness. Help our First-Gen student navigate their thoughts. Are these thoughts <span class="text-pink-400 font-bold">Socialized</span> (external expectations) or <span class="text-blue-400 font-bold">Self-Authoring</span> (internal purpose)?</p>
+            </div>
+
+            <div class="pixel-box p-6 w-full max-w-2xl text-center bg-slate-800 border-blue-500">
+                <div id="theory-card" class="bg-white text-black p-8 rounded border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] mb-8 min-h-[150px] flex items-center justify-center text-xl font-bold">
+                    "I'm majoring in Business because my parents said it's safe."
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button onclick="checkTheory('socialized')" class="btn-retro font-retro text-sm px-4 py-3 bg-pink-500 text-white border-white w-full md:w-1/2">
+                        Socialized Mind
+                    </button>
+                    <button onclick="checkTheory('self-authoring')" class="btn-retro font-retro text-sm px-4 py-3 bg-blue-500 text-white border-white w-full md:w-1/2">
+                        Self-Authoring Mind
+                    </button>
+                </div>
+                <div id="theory-feedback" class="h-8 mt-4 font-bold text-xl"></div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: LEVEL UNLOCKS -->
+        <section id="screen-levels" class="screen flex-col items-center w-full">
+            <div class="text-center mb-6">
+                <h2 class="font-retro text-xl md:text-2xl text-yellow-400 mb-2">STAGE 2: CHOOSE YOUR PATH</h2>
+                <p class="max-w-3xl mx-auto">We aren't building new departments. We are turning existing campus services into an epic questline. Click each locked level to map the student journey!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                <!-- Level 1 -->
+                <div id="level-1" class="level-card pixel-box p-4 flex flex-col items-center text-center border-gray-500" onclick="unlockLevel(1)">
+                    <div class="text-4xl mb-2">📖</div>
+                    <h3 class="font-retro text-sm text-blue-400 mb-2">01 TUTORIAL MODE</h3>
+                    <p class="text-xs mb-2 hidden content">Start here. Learn the basics. Find your strengths.</p>
+                    <div class="mt-auto pt-4 border-t border-gray-700 hidden content w-full text-xs text-gray-400">
+                        <strong>Uses:</strong> Advising, Tutoring, Academic Coaching
+                    </div>
+                    <div class="lock-icon text-2xl mt-4">🔒</div>
+                </div>
+
+                <!-- Level 2 -->
+                <div id="level-2" class="level-card pixel-box p-4 flex flex-col items-center text-center border-gray-500 pointer-events-none" onclick="unlockLevel(2)">
+                    <div class="text-4xl mb-2">📈</div>
+                    <h3 class="font-retro text-sm text-green-400 mb-2">02 CHARACTER DEV</h3>
+                    <p class="text-xs mb-2 hidden content">Build skills. Grow mindset. Level up daily.</p>
+                    <div class="mt-auto pt-4 border-t border-gray-700 hidden content w-full text-xs text-gray-400">
+                        <strong>Uses:</strong> Student Orgs, Intercultural Center
+                    </div>
+                    <div class="lock-icon text-2xl mt-4">🔒</div>
+                </div>
+
+                <!-- Level 3 -->
+                <div id="level-3" class="level-card pixel-box p-4 flex flex-col items-center text-center border-gray-500 pointer-events-none" onclick="unlockLevel(3)">
+                    <div class="text-4xl mb-2">🧭</div>
+                    <h3 class="font-retro text-sm text-pink-400 mb-2">03 CHOOSE QUEST</h3>
+                    <p class="text-xs mb-2 hidden content">Make decisions. Take action. Create impact.</p>
+                    <div class="mt-auto pt-4 border-t border-gray-700 hidden content w-full text-xs text-gray-400">
+                        <strong>Uses:</strong> Majors, Career Services, Transfer Planning
+                    </div>
+                    <div class="lock-icon text-2xl mt-4">🔒</div>
+                </div>
+
+                <!-- Level 4 -->
+                <div id="level-4" class="level-card pixel-box p-4 flex flex-col items-center text-center border-gray-500 pointer-events-none" onclick="unlockLevel(4)">
+                    <div class="text-4xl mb-2">👑</div>
+                    <h3 class="font-retro text-sm text-yellow-400 mb-2">04 MAIN CHARACTER</h3>
+                    <p class="text-xs mb-2 hidden content">Step into your power. Lead your story.</p>
+                    <div class="mt-auto pt-4 border-t border-gray-700 hidden content w-full text-xs text-gray-400">
+                        <strong>Uses:</strong> Personal Mission, Leadership, Mentoring
+                    </div>
+                    <div class="lock-icon text-2xl mt-4">🔒</div>
+                </div>
+            </div>
+
+            <button id="btn-next-budget" onclick="nextScreen('screen-levels', 'screen-budget')" class="btn-retro font-retro px-6 py-3 mt-8 hidden">
+                ENTER BOSS ROOM
+            </button>
+        </section>
+
+        <!-- SCREEN 3: BUDGET BOSS -->
+        <section id="screen-budget" class="screen flex-col items-center w-full">
+            <div class="text-center mb-6">
+                <h2 class="font-retro text-xl md:text-2xl text-red-500 mb-2">BOSS LEVEL: THE ASK</h2>
+                <p class="max-w-2xl mx-auto">To defeat "Student Attrition", we need to equip our inventory. We are asking for exactly $10,000 to reach an entire incoming class using resources already on campus. Click to fund components!</p>
+            </div>
+
+            <div class="pixel-box p-6 w-full max-w-3xl border-red-500 bg-red-950/40">
+                
+                <div class="mb-6">
+                    <div class="flex justify-between font-retro text-sm mb-2">
+                        <span>FUNDS SECURED:</span>
+                        <span id="budget-text" class="text-green-400">$0 / $10,000</span>
+                    </div>
+                    <div class="h-6 bg-gray-800 border-2 border-white w-full rounded p-0.5 relative">
+                        <div id="budget-bar" class="h-full bg-gradient-to-r from-green-500 to-green-300 w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="budget-items">
+                    <button onclick="fundItem(this, 4000, 'Student Leaders / Peer Mentors')" class="pixel-box p-3 flex justify-between items-center hover:bg-slate-700 transition cursor-pointer text-left">
+                        <span class="font-bold">🧑‍🤝‍🧑 Peer Mentors</span>
+                        <span class="font-retro text-xs text-yellow-400">$4,000</span>
+                    </button>
+                    <button onclick="fundItem(this, 2000, 'T-Shirts & Incentives')" class="pixel-box p-3 flex justify-between items-center hover:bg-slate-700 transition cursor-pointer text-left">
+                        <span class="font-bold">👕 T-Shirts & Incentives</span>
+                        <span class="font-retro text-xs text-yellow-400">$2,000</span>
+                    </button>
+                    <button onclick="fundItem(this, 2000, 'Recognition Event')" class="pixel-box p-3 flex justify-between items-center hover:bg-slate-700 transition cursor-pointer text-left">
+                        <span class="font-bold">🏆 Recognition Event</span>
+                        <span class="font-retro text-xs text-yellow-400">$2,000</span>
+                    </button>
+                    <button onclick="fundItem(this, 1000, 'Marketing Materials')" class="pixel-box p-3 flex justify-between items-center hover:bg-slate-700 transition cursor-pointer text-left">
+                        <span class="font-bold">📢 Marketing Materials</span>
+                        <span class="font-retro text-xs text-yellow-400">$1,000</span>
+                    </button>
+                    <button onclick="fundItem(this, 1000, 'Digital Badges')" class="pixel-box p-3 flex justify-between items-center hover:bg-slate-700 transition cursor-pointer text-left md:col-span-2">
+                        <span class="font-bold">🛡️ Digital Badges</span>
+                        <span class="font-retro text-xs text-yellow-400">$1,000</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <button id="btn-finish" onclick="nextScreen('screen-budget', 'screen-finale')" class="btn-retro font-retro px-8 py-4 mt-8 hidden bg-green-500 text-white animate-pulse border-white">
+                VICTORY! SEE RESULTS
+            </button>
+        </section>
+
+        <!-- SCREEN 4: FINALE -->
+        <section id="screen-finale" class="screen flex-col items-center text-center w-full">
+            <div class="text-6xl mb-4">🏆</div>
+            <h1 class="font-retro text-3xl md:text-5xl text-yellow-400 mb-6 tracking-tighter" style="text-shadow: 2px 2px 0px #FF1493;">
+                ACHIEVEMENT UNLOCKED!
+            </h1>
+            <div class="pixel-box p-8 w-full max-w-3xl border-yellow-400 bg-slate-800">
+                <h2 class="text-2xl font-bold mb-4 text-blue-300">DIFFERENT BACKGROUNDS. ONE COMMUNITY. INFINITE POSSIBILITIES.</h2>
+                <p class="text-lg mb-6">
+                    By investing just <strong>$10,000</strong>, we transform isolated support services into a cohesive, year-long journey. We give students confidence, direction, and a motivating reason to use the resources we already have. 
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mb-6">
+                    <div class="bg-slate-900 p-4 border border-blue-500 rounded">
+                        <h3 class="font-retro text-xs text-blue-400 mb-2">FOR STUDENTS</h3>
+                        <p class="text-sm">Confidence, direction, and belonging. A clear path from following expectations to authoring their own purpose.</p>
+                    </div>
+                    <div class="bg-slate-900 p-4 border border-pink-500 rounded">
+                        <h3 class="font-retro text-xs text-pink-400 mb-2">FOR THE INSTITUTION</h3>
+                        <p class="text-sm">Higher engagement and retention by connecting existing services. Strong impact, minimal new spend.</p>
+                    </div>
+                </div>
+
+                <div class="text-xl font-bold italic text-yellow-400">
+                    "Don't just play the game. Be the main character."
+                </div>
+            </div>
+            
+            <button onclick="location.reload()" class="btn-retro font-retro px-6 py-3 mt-8 text-sm bg-gray-700 text-white border-gray-500">
+                PLAY AGAIN
+            </button>
+        </section>
+
+    </main>
+
+    <script>
+        // Game State Variables
+        let currentXp = 0;
+        const maxXp = 2000;
+        let theoryIndex = 0;
+        let levelsUnlocked = 0;
+        let budgetTotal = 0;
+        const maxBudget = 10000;
+
+        // Theory Questions (Socialized vs Self-Authoring)
+        const theoryQuestions = [
+            {
+                text: "\"I'm majoring in Business because my parents said it's a safe choice.\"",
+                type: "socialized",
+                explanation: "Socialized: Goals shaped by family expectations."
+            },
+            {
+                text: "\"I evaluated my strengths and chose a major that aligns with my goal to help others.\"",
+                type: "self-authoring",
+                explanation: "Self-Authoring: Driven by internal values and self-made decisions."
+            },
+            {
+                text: "\"I joined this club because all my friends from high school are in it.\"",
+                type: "socialized",
+                explanation: "Socialized: Looking outward to peers to know what to do."
+            },
+            {
+                text: "\"I noticed our campus lacked resources for transfer students, so I started a peer mentoring group.\"",
+                type: "self-authoring",
+                explanation: "Self-Authoring: Identifying a gap, leading, and authoring a new path."
+            }
+        ];
+
+        // --- Core Functions ---
+
+        function addXp(amount) {
+            currentXp = Math.min(currentXp + amount, maxXp);
+            document.getElementById('xp-text').innerText = `${currentXp} / ${maxXp}`;
+            document.getElementById('xp-bar').style.width = `${(currentXp / maxXp) * 100}%`;
+            
+            // Flash XP text green
+            const xpText = document.getElementById('xp-text');
+            xpText.classList.add('text-white');
+            setTimeout(() => xpText.classList.remove('text-white'), 300);
+        }
+
+        function switchScreen(hideId, showId) {
+            document.getElementById(hideId).classList.remove('active');
+            document.getElementById(showId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function nextScreen(hideId, showId) {
+            switchScreen(hideId, showId);
+            addXp(200); // Reward for advancing
+        }
+
+        function startGame() {
+            switchScreen('screen-start', 'screen-theory');
+            addXp(100);
+            loadTheoryQuestion();
+        }
+
+        // --- Stage 1: Theory Functions ---
+
+        function loadTheoryQuestion() {
+            if (theoryIndex < theoryQuestions.length) {
+                document.getElementById('theory-card').innerText = theoryQuestions[theoryIndex].text;
+                document.getElementById('theory-card').classList.remove('shake');
+            } else {
+                // Done with theory
+                document.getElementById('theory-card').innerHTML = `<span class="text-green-600">Great job! You helped the student move towards Self-Authorship.</span>`;
+                document.querySelector('#screen-theory .flex.gap-4').style.display = 'none';
+                
+                setTimeout(() => {
+                    nextScreen('screen-theory', 'screen-levels');
+                }, 2000);
+            }
+        }
+
+        function checkTheory(guessType) {
+            const currentQ = theoryQuestions[theoryIndex];
+            const feedbackEl = document.getElementById('theory-feedback');
+            
+            if (guessType === currentQ.type) {
+                feedbackEl.innerHTML = `<span class="text-green-400">Correct! +200 XP</span><br><span class="text-sm font-normal text-white">${currentQ.explanation}</span>`;
+                addXp(200);
+                theoryIndex++;
+                setTimeout(() => {
+                    feedbackEl.innerHTML = '';
+                    loadTheoryQuestion();
+                }, 2500);
+            } else {
+                document.getElementById('theory-card').classList.add('shake');
+                feedbackEl.innerHTML = `<span class="text-red-400">Try again! Review Kegan's theory.</span>`;
+                setTimeout(() => {
+                    document.getElementById('theory-card').classList.remove('shake');
+                    feedbackEl.innerHTML = '';
+                }, 1500);
+            }
+        }
+
+        // --- Stage 2: Levels Functions ---
+
+        function unlockLevel(levelNum) {
+            const card = document.getElementById(`level-${levelNum}`);
+            if (card.classList.contains('unlocked')) return; // Already unlocked
+
+            // Check if previous level is unlocked (sequential logic)
+            if (levelNum > 1 && !document.getElementById(`level-${levelNum-1}`).classList.contains('unlocked')) {
+                alert("You must unlock the previous level first!");
+                return;
+            }
+
+            // Unlock visually
+            card.classList.add('unlocked');
+            card.classList.remove('pointer-events-none');
+            
+            // Show content, hide lock
+            const contents = card.querySelectorAll('.content');
+            contents.forEach(c => c.classList.remove('hidden'));
+            card.querySelector('.lock-icon').classList.add('hidden');
+
+            addXp(150);
+            levelsUnlocked++;
+
+            // Enable next level click
+            if (levelNum < 4) {
+                document.getElementById(`level-${levelNum+1}`).classList.remove('pointer-events-none');
+                document.getElementById(`level-${levelNum+1}`).style.cursor = "pointer";
+            }
+
+            if (levelsUnlocked === 4) {
+                document.getElementById('btn-next-budget').classList.remove('hidden');
+            }
+        }
+
+        // --- Stage 3: Budget Functions ---
+
+        function fundItem(btn, amount, name) {
+            if (btn.classList.contains('bg-green-800')) return; // already funded
+
+            budgetTotal += amount;
+            
+            // Update UI
+            document.getElementById('budget-text').innerText = `$${budgetTotal.toLocaleString()} / $10,000`;
+            document.getElementById('budget-bar').style.width = `${(budgetTotal / maxBudget) * 100}%`;
+            
+            btn.classList.remove('hover:bg-slate-700');
+            btn.classList.add('bg-green-800', 'border-green-400', 'border-2');
+            btn.innerHTML += `<span class="ml-2">✅</span>`;
+            
+            addXp(100);
+
+            if (budgetTotal === maxBudget) {
+                document.getElementById('budget-text').classList.remove('text-green-400');
+                document.getElementById('budget-text').classList.add('text-yellow-400', 'animate-pulse');
+                document.getElementById('btn-finish').classList.remove('hidden');
+                addXp(100); // Final XP bump to max it out
+            }
+        }
+    </script>
+</body>
+</html>
