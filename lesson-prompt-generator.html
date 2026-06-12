@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson Prompt Builder — Academic Support Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --ink-soft:#3D4E6E;
+    --paper:#FAFAF6;
+    --card:#FFFFFF;
+    --line:#D8DCE3;
+    --highlight:#FFE34D;
+    --highlight-soft:#FFF6C8;
+    --teal:#0E7C7B;
+    --slate:#6B7689;
+    --danger:#A33B2E;
+    --radius:10px;
+    --shadow:0 2px 12px rgba(27,42,74,.08);
+    --font-display:'Zilla Slab', Georgia, serif;
+    --font-body:'Source Sans 3', 'Segoe UI', sans-serif;
+    --font-mono:'IBM Plex Mono', Consolas, monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *, *::before, *::after{animation:none !important; transition:none !important;}
+  }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.55;
+  }
+  a{color:var(--teal);}
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px; border-radius:4px;}
+
+  /* ---------- Header ---------- */
+  header{
+    border-bottom:3px solid var(--ink);
+    background:var(--card);
+    padding:28px clamp(20px,4vw,48px) 24px;
+  }
+  .masthead{max-width:1320px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:flex-end; gap:18px; justify-content:space-between;}
+  .masthead h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(26px,3.4vw,38px);
+    line-height:1.1;
+  }
+  .masthead h1 .hl{
+    background:linear-gradient(transparent 58%, var(--highlight) 58%);
+    padding:0 2px;
+  }
+  .masthead .sub{color:var(--slate); font-size:15px; max-width:560px;}
+  .ada-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--ink); color:#fff;
+    font-size:13px; font-weight:600; letter-spacing:.02em;
+    padding:8px 14px; border-radius:999px;
+    white-space:nowrap;
+  }
+  .ada-badge svg{flex:none;}
+
+  /* ---------- Layout ---------- */
+  .wrap{
+    max-width:1320px; margin:0 auto;
+    display:grid; grid-template-columns:minmax(0,7fr) minmax(0,6fr);
+    gap:32px;
+    padding:32px clamp(20px,4vw,48px) 64px;
+    align-items:start;
+  }
+  @media (max-width:980px){
+    .wrap{grid-template-columns:1fr;}
+    .preview-col{position:static !important;}
+  }
+
+  /* ---------- Form ---------- */
+  .step{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px 24px;
+    margin-bottom:20px;
+  }
+  .step-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px;}
+  .step-head h2{
+    font-family:var(--font-display);
+    font-size:20px; font-weight:600;
+  }
+  .step-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+    color:var(--teal); text-transform:uppercase;
+  }
+  .hint{color:var(--slate); font-size:14px; margin-bottom:14px;}
+  label.field-label{display:block; font-weight:600; font-size:14px; margin:14px 0 6px;}
+  label.field-label:first-of-type{margin-top:10px;}
+  .optional{font-weight:400; color:var(--slate);}
+  input[type=text], textarea, select{
+    width:100%;
+    font-family:var(--font-body); font-size:15px; color:var(--ink);
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+    transition:border-color .15s;
+  }
+  textarea{resize:vertical; min-height:84px;}
+  input:focus, textarea:focus, select:focus{border-color:var(--teal); outline:none; box-shadow:0 0 0 3px rgba(14,124,123,.15);}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:560px){.row{grid-template-columns:1fr;}}
+
+  /* pill checkboxes / radios */
+  .pills{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
+  .pill{position:relative;}
+  .pill input{position:absolute; opacity:0; width:100%; height:100%; cursor:pointer;}
+  .pill span{
+    display:inline-block;
+    border:1.5px solid var(--line);
+    border-radius:999px;
+    padding:7px 14px;
+    font-size:14px; font-weight:600; color:var(--ink-soft);
+    background:#fff;
+    cursor:pointer;
+    transition:background .15s, border-color .15s, color .15s;
+    user-select:none;
+  }
+  .pill input:checked + span{
+    background:var(--ink); border-color:var(--ink); color:#fff;
+  }
+  .pill input:focus-visible + span{outline:3px solid var(--teal); outline-offset:2px;}
+  .pill:hover span{border-color:var(--ink-soft);}
+
+  fieldset{border:none;}
+  legend{font-weight:600; font-size:14px; margin-bottom:2px; padding:0;}
+  legend .optional{font-weight:400;}
+
+  .ada-note{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--highlight-soft);
+    border:1.5px solid #E8D26A;
+    border-radius:8px;
+    padding:12px 14px; font-size:14px; color:#5C4D0A;
+    margin-top:14px;
+  }
+  .ada-note strong{color:#4A3E06;}
+
+  .actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:4px;}
+  button{
+    font-family:var(--font-body); font-size:15px; font-weight:700;
+    border-radius:8px; padding:12px 22px; cursor:pointer;
+    border:2px solid var(--ink);
+    transition:transform .1s, background .15s, color .15s;
+  }
+  button:active{transform:translateY(1px);}
+  .btn-primary{background:var(--ink); color:#fff;}
+  .btn-primary:hover{background:#26375C;}
+  .btn-ghost{background:transparent; color:var(--ink);}
+  .btn-ghost:hover{background:#EEF0F4;}
+
+  /* ---------- Preview ---------- */
+  .preview-col{position:sticky; top:24px;}
+  .preview-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .preview-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:var(--ink); color:#fff;
+    padding:12px 18px;
+  }
+  .preview-bar h2{font-family:var(--font-display); font-size:17px; font-weight:600;}
+  .copy-btn{
+    background:var(--highlight); color:var(--ink);
+    border:none; font-weight:700; font-size:14px;
+    padding:8px 16px; border-radius:6px;
+  }
+  .copy-btn:hover{background:#FFD91A;}
+  .copy-btn.copied{background:var(--teal); color:#fff;}
+  .preview-body{
+    font-family:var(--font-mono);
+    font-size:13px; line-height:1.65;
+    padding:20px 22px;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    max-height:72vh; overflow-y:auto;
+    color:var(--ink-soft);
+  }
+  .preview-body .slot{
+    background:var(--highlight-soft);
+    border-bottom:2px solid var(--highlight);
+    color:#7A6A14;
+    border-radius:3px; padding:0 3px;
+    font-style:italic;
+  }
+  .preview-body .filled{color:var(--ink); font-weight:500;}
+  .preview-body .h{color:var(--teal); font-weight:500;}
+  .preview-meta{
+    border-top:1px solid var(--line);
+    padding:10px 18px;
+    font-size:13px; color:var(--slate);
+    display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  }
+  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;}
+
+  footer{
+    text-align:center; color:var(--slate); font-size:13px;
+    padding:0 20px 36px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="masthead">
+    <div>
+      <h1>Lesson Prompt Builder <span class="hl">for Academic Support</span></h1>
+      <p class="sub">Build a complete, copy-ready AI prompt for tutoring sessions, SI plans, library instruction, and academic coaching. Works with any AI platform.</p>
+    </div>
+    <span class="ada-badge" role="note" aria-label="ADA and accessibility requirements are always included in every generated prompt">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M5 8.2l2 2 4-4.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      ADA compliance built into every prompt
+    </span>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ================= FORM ================= -->
+  <div class="form-col">
+    <form id="builder" autocomplete="off">
+
+      <section class="step" aria-labelledby="s1h">
+        <div class="step-head"><span class="step-tag">Step 1</span><h2 id="s1h">Service area and session basics</h2></div>
+        <p class="hint">Anchor the lesson in the right support service so the AI uses the correct pedagogy.</p>
+
+        <label class="field-label" for="service">Academic support service</label>
+        <select id="service" name="service">
+          <option value="">— Select a service —</option>
+          <option>Information literacy instruction</option>
+          <option>Library research skills</option>
+          <option>Supplemental Instruction (SI)</option>
+          <option>Reading tutoring</option>
+          <option>Writing tutoring</option>
+          <option>Language tutoring (ESL / world languages)</option>
+          <option>Science tutoring</option>
+          <option>Math tutoring</option>
+          <option>Computer science tutoring</option>
+          <option>Academic coaching basics</option>
+        </select>
+
+        <div class="row">
+          <div>
+            <label class="field-label" for="title">Lesson or session title <span class="optional">(optional)</span></label>
+            <input type="text" id="title" placeholder="e.g., Evaluating Sources with the CRAAP Test">
+          </div>
+          <div>
+            <label class="field-label" for="length">Session length</label>
+            <select id="length">
+              <option value="">— Select —</option>
+              <option>30 minutes</option>
+              <option>50 minutes</option>
+              <option>75 minutes</option>
+              <option>90 minutes</option>
+              <option>2 hours</option>
+              <option>Multi-session series</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend class="field-label">Delivery format</legend>
+          <div class="pills" role="group" aria-label="Delivery format">
+            <label class="pill"><input type="radio" name="format" value="In person"><span>In person</span></label>
+            <label class="pill"><input type="radio" name="format" value="Online synchronous"><span>Online live</span></label>
+            <label class="pill"><input type="radio" name="format" value="Online asynchronous"><span>Online self-paced</span></label>
+            <label class="pill"><input type="radio" name="format" value="Hybrid"><span>Hybrid</span></label>
+          </div>
+        </fieldset>
+      </section>
+
+      <section class="step" aria-labelledby="s2h">
+        <div class="step-head"><span class="step-tag">Step 2</span><h2 id="s2h">Learning objectives and content</h2></div>
+        <p class="hint">List one item per line. The generator formats them automatically.</p>
+
+        <label class="field-label" for="objectives">Learning objectives</label>
+        <textarea id="objectives" placeholder="Students will be able to distinguish scholarly from popular sources&#10;Students will be able to build a keyword search strategy"></textarea>
+
+        <label class="field-label" for="topics">Topics covered</label>
+        <textarea id="topics" placeholder="Source types&#10;Database search operators&#10;Citation basics"></textarea>
+
+        <label class="field-label" for="terms">Key terms</label>
+        <textarea id="terms" placeholder="Peer review&#10;Boolean operators&#10;Paraphrase vs. quotation"></textarea>
+      </section>
+
+      <section class="step" aria-labelledby="s3h">
+        <div class="step-head"><span class="step-tag">Step 3</span><h2 id="s3h">Audience</h2></div>
+        <p class="hint">Select all that apply, then add anything the AI should know about your students.</p>
+        <fieldset>
+          <legend class="sr-only">Audience groups</legend>
+          <div class="pills" role="group" aria-label="Audience groups">
+            <label class="pill"><input type="checkbox" name="audience" value="first-year community college students"><span>First-year students</span></label>
+            <label class="pill"><input type="checkbox" name="audience" value="developmental / corequisite students"><span>Developmental / co-req</span></label>
+            <label class="pill"><input type="checkbox" name="audience" value="dual credit high school students"><span>Dual credit</span></label>
+            <label class="pill"><input type="checkbox" name="audience" value="returning adult learners"><span>Returning adults</span></label>
+            <label class="pill"><input type="checkbox" name="audience" value="English language learners"><span>English language learners</span></label>
+            <label class="pill"><input type="checkbox" name="audience" value="transfer-intending students"><span>Transfer-intending</span></label>
+            <label class="pill"><input type="checkbox" name="audience" value="STEM majors"><span>STEM majors</span></label>
+            <label class="pill"><input type="checkbox" name="audience" value="workforce / technical program students"><span>Workforce / technical</span></label>
+          </div>
+        </fieldset>
+        <label class="field-label" for="audNotes">Audience notes <span class="optional">(optional)</span></label>
+        <input type="text" id="audNotes" placeholder="e.g., Mixed prior exposure; many students work full time">
+      </section>
+
+      <section class="step" aria-labelledby="s4h">
+        <div class="step-head"><span class="step-tag">Step 4</span><h2 id="s4h">Activities and engagement</h2></div>
+        <p class="hint">Choose the activity types the AI should design into the lesson.</p>
+        <fieldset>
+          <legend class="sr-only">Activity types</legend>
+          <div class="pills" role="group" aria-label="Activity types">
+            <label class="pill"><input type="checkbox" name="activities" value="interactive learning activities"><span>Interactive activities</span></label>
+            <label class="pill"><input type="checkbox" name="activities" value="team projects"><span>Team projects</span></label>
+            <label class="pill"><input type="checkbox" name="activities" value="case studies"><span>Case studies</span></label>
+            <label class="pill"><input type="checkbox" name="activities" value="labs or hands-on practice"><span>Labs / hands-on</span></label>
+            <label class="pill"><input type="checkbox" name="activities" value="formative and summative assessments"><span>Assessments</span></label>
+            <label class="pill"><input type="checkbox" name="activities" value="active learning techniques (think-pair-share, polling, one-minute papers)"><span>Active learning</span></label>
+          </div>
+        </fieldset>
+
+        <label class="field-label" for="analogies">Analogies and real-world examples to use or build on <span class="optional">(optional — one per line)</span></label>
+        <textarea id="analogies" placeholder="Boolean operators work like filters on a shopping website&#10;Peer review is like a job interview panel for an article"></textarea>
+
+        <div class="ada-note" role="note">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="flex:none; margin-top:1px;"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14" r="1.1" fill="currentColor"/></svg>
+          <div><strong>Accessibility is non-negotiable.</strong> Every prompt automatically requires ADA and Section 508 compliance: alt text, captioning, screen-reader-friendly materials, multiple means of engagement and representation (UDL), and accessible handouts.</div>
+        </div>
+      </section>
+
+      <section class="step" aria-labelledby="s5h">
+        <div class="step-head"><span class="step-tag">Step 5</span><h2 id="s5h">Output preferences</h2></div>
+        <fieldset>
+          <legend class="field-label">What should the AI produce?</legend>
+          <div class="pills" role="group" aria-label="Deliverables">
+            <label class="pill"><input type="checkbox" name="deliver" value="a complete facilitator lesson plan with timing" checked><span>Lesson plan w/ timing</span></label>
+            <label class="pill"><input type="checkbox" name="deliver" value="student-facing handouts or worksheets"><span>Student handouts</span></label>
+            <label class="pill"><input type="checkbox" name="deliver" value="discussion questions and prompts"><span>Discussion questions</span></label>
+            <label class="pill"><input type="checkbox" name="deliver" value="a short formative assessment with answer key"><span>Assessment + key</span></label>
+            <label class="pill"><input type="checkbox" name="deliver" value="an extension or follow-up practice set"><span>Follow-up practice</span></label>
+          </div>
+        </fieldset>
+        <label class="field-label" for="extra">Anything else? <span class="optional">(optional)</span></label>
+        <textarea id="extra" style="min-height:64px" placeholder="e.g., Align to TSI readiness; students will bring their own research topics"></textarea>
+
+        <div class="actions" style="margin-top:18px;">
+          <button type="button" class="btn-primary" id="copyMain">Copy prompt to clipboard</button>
+          <button type="button" class="btn-ghost" id="resetBtn">Clear all fields</button>
+        </div>
+      </section>
+    </form>
+  </div>
+
+  <!-- ================= PREVIEW ================= -->
+  <div class="preview-col">
+    <div class="preview-card">
+      <div class="preview-bar">
+        <h2>Your prompt — updates as you type</h2>
+        <button type="button" class="copy-btn" id="copyTop">Copy</button>
+      </div>
+      <div class="preview-body" id="preview" aria-live="polite" aria-label="Generated prompt preview"></div>
+      <div class="preview-meta">
+        <span id="wordCount">0 words</span>
+        <span>Paste into Claude, Copilot, ChatGPT, Gemini, or any AI platform</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>Built for academic support educators. Highlighted blanks fill in as you complete the form — empty optional fields are dropped from the copied prompt.</footer>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const form = $('builder');
+  const preview = $('preview');
+
+  function lines(val){
+    return val.split('\n').map(s=>s.trim()).filter(Boolean);
+  }
+  function checked(name){
+    return [...document.querySelectorAll('input[name="'+name+'"]:checked')].map(i=>i.value);
+  }
+  function radio(name){
+    const el = document.querySelector('input[name="'+name+'"]:checked');
+    return el ? el.value : '';
+  }
+  function esc(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  // returns {html, text} — html shows highlighted slot when empty; text omits or uses fallback
+  function slot(value, placeholder){
+    if(value && value.trim()){
+      return {html:'<span class="filled">'+esc(value.trim())+'</span>', text:value.trim(), filled:true};
+    }
+    return {html:'<span class="slot">'+esc(placeholder)+'</span>', text:placeholder, filled:false};
+  }
+  function bulletBlock(arr){
+    return arr.map(x=>'- '+x).join('\n');
+  }
+
+  function build(){
+    const service   = slot($('service').value, '[select a support service]');
+    const title     = $('title').value.trim();
+    const length    = $('length').value;
+    const format    = radio('format');
+    const objectives= lines($('objectives').value);
+    const topics    = lines($('topics').value);
+    const terms     = lines($('terms').value);
+    const audience  = checked('audience');
+    const audNotes  = $('audNotes').value.trim();
+    const acts      = checked('activities');
+    const analogies = lines($('analogies').value);
+    const deliver   = checked('deliver');
+    const extra     = $('extra').value.trim();
+
+    // ---------- plain text version ----------
+    let t = [];
+    t.push('You are an award-winning community college instructor and academic support educator with deep expertise in ' + service.text + '.');
+    t.push('');
+    let sessionLine = 'Design a complete learning session';
+    if(title) sessionLine += ' titled "' + title + '"';
+    if(length) sessionLine += ' lasting ' + length;
+    if(format) sessionLine += ', delivered ' + format.toLowerCase();
+    sessionLine += '.';
+    t.push(sessionLine);
+    t.push('');
+
+    t.push('LEARNING OBJECTIVES');
+    t.push(objectives.length ? bulletBlock(objectives) : '- [Add learning objectives — what students will be able to do]');
+    t.push('');
+
+    t.push('TOPICS COVERED');
+    t.push(topics.length ? bulletBlock(topics) : '- [Add the topics this session covers]');
+    t.push('');
+
+    t.push('KEY TERMS');
+    t.push(terms.length ? bulletBlock(terms) : '- [Add key terms to define and reinforce]');
+    t.push('');
+
+    t.push('AUDIENCE');
+    let audLine = audience.length ? 'Community college learners: ' + audience.join('; ') + '.' : '[Describe your audience.]';
+    if(audNotes) audLine += ' Additional context: ' + audNotes;
+    t.push(audLine);
+    t.push('');
+
+    t.push('REQUIRED ACTIVITY TYPES');
+    t.push(acts.length ? bulletBlock(acts) : '- [Select the activity types to design into the session]');
+    t.push('');
+
+    t.push('ANALOGIES AND REAL-WORLD EXAMPLES');
+    if(analogies.length){
+      t.push('Incorporate and build on these analogies, and add at least two more of your own that fit this audience:');
+      t.push(bulletBlock(analogies));
+    } else {
+      t.push('Create at least three analogies or real-world examples that connect the content to everyday experiences relevant to this audience (work, family, technology, money, sports, or community life).');
+    }
+    t.push('');
+
+    t.push('ACCESSIBILITY REQUIREMENTS (NON-NEGOTIABLE)');
+    t.push('All materials and activities must be ADA and Section 508 compliant. Apply Universal Design for Learning: provide multiple means of engagement, representation, and expression. Include alt text descriptions for any visuals, captioning notes for any media, screen-reader-friendly formatting for handouts, and an accessible alternative for every activity. Flag any activity that may need accommodation planning.');
+    t.push('');
+
+    t.push('DELIVERABLES');
+    t.push(deliver.length ? 'Produce: ' + deliver.join('; ') + '.' : 'Produce: a complete facilitator lesson plan with timing.');
+    t.push('');
+
+    if(extra){
+      t.push('ADDITIONAL CONTEXT');
+      t.push(extra);
+      t.push('');
+    }
+
+    t.push('FORMAT');
+    t.push('Organize the lesson plan with clear sections: Opening hook, direct instruction or guided discovery, practice activities with timing, checks for understanding, and closing reflection. Use plain language, define every key term in student-friendly wording, and keep the tone encouraging and confidence-building. Ask me up to three clarifying questions before generating if anything important is missing.');
+
+    const plain = t.join('\n');
+
+    // ---------- HTML preview version ----------
+    let h = [];
+    h.push('You are an award-winning community college instructor and academic support educator with deep expertise in ' + service.html + '.');
+    h.push('');
+    let sH = 'Design a complete learning session';
+    if(title) sH += ' titled "<span class="filled">'+esc(title)+'</span>"';
+    if(length) sH += ' lasting <span class="filled">'+esc(length)+'</span>';
+    if(format) sH += ', delivered <span class="filled">'+esc(format.toLowerCase())+'</span>';
+    sH += '.';
+    h.push(sH);
+    h.push('');
+
+    function hSection(label, arr, placeholder){
+      h.push('<span class="h">'+label+'</span>');
+      if(arr.length){
+        h.push(arr.map(x=>'- <span class="filled">'+esc(x)+'</span>').join('\n'));
+      } else {
+        h.push('- <span class="slot">'+esc(placeholder)+'</span>');
+      }
+      h.push('');
+    }
+    hSection('LEARNING OBJECTIVES', objectives, '[Add learning objectives — what students will be able to do]');
+    hSection('TOPICS COVERED', topics, '[Add the topics this session covers]');
+    hSection('KEY TERMS', terms, '[Add key terms to define and reinforce]');
+
+    h.push('<span class="h">AUDIENCE</span>');
+    if(audience.length){
+      let a = 'Community college learners: <span class="filled">'+esc(audience.join('; '))+'</span>.';
+      if(audNotes) a += ' Additional context: <span class="filled">'+esc(audNotes)+'</span>';
+      h.push(a);
+    } else {
+      h.push('<span class="slot">[Describe your audience.]</span>' + (audNotes ? ' Additional context: <span class="filled">'+esc(audNotes)+'</span>' : ''));
+    }
+    h.push('');
+
+    hSection('REQUIRED ACTIVITY TYPES', acts, '[Select the activity types to design into the session]');
+
+    h.push('<span class="h">ANALOGIES AND REAL-WORLD EXAMPLES</span>');
+    if(analogies.length){
+      h.push('Incorporate and build on these analogies, and add at least two more of your own that fit this audience:');
+      h.push(analogies.map(x=>'- <span class="filled">'+esc(x)+'</span>').join('\n'));
+    } else {
+      h.push('Create at least three analogies or real-world examples that connect the content to everyday experiences relevant to this audience (work, family, technology, money, sports, or community life).');
+    }
+    h.push('');
+
+    h.push('<span class="h">ACCESSIBILITY REQUIREMENTS (NON-NEGOTIABLE)</span>');
+    h.push('All materials and activities must be ADA and Section 508 compliant. Apply Universal Design for Learning: provide multiple means of engagement, representation, and expression. Include alt text descriptions for any visuals, captioning notes for any media, screen-reader-friendly formatting for handouts, and an accessible alternative for every activity. Flag any activity that may need accommodation planning.');
+    h.push('');
+
+    h.push('<span class="h">DELIVERABLES</span>');
+    h.push(deliver.length ? 'Produce: <span class="filled">'+esc(deliver.join('; '))+'</span>.' : 'Produce: a complete facilitator lesson plan with timing.');
+    h.push('');
+
+    if(extra){
+      h.push('<span class="h">ADDITIONAL CONTEXT</span>');
+      h.push('<span class="filled">'+esc(extra)+'</span>');
+      h.push('');
+    }
+
+    h.push('<span class="h">FORMAT</span>');
+    h.push('Organize the lesson plan with clear sections: Opening hook, direct instruction or guided discovery, practice activities with timing, checks for understanding, and closing reflection. Use plain language, define every key term in student-friendly wording, and keep the tone encouraging and confidence-building. Ask me up to three clarifying questions before generating if anything important is missing.');
+
+    preview.innerHTML = h.join('\n');
+    $('wordCount').textContent = plain.trim().split(/\s+/).length + ' words';
+    return plain;
+  }
+
+  let currentPlain = build();
+  form.addEventListener('input', ()=>{ currentPlain = build(); });
+  form.addEventListener('change', ()=>{ currentPlain = build(); });
+
+  function doCopy(btn, original){
+    function flash(ok){
+      btn.classList.toggle('copied', ok);
+      btn.textContent = ok ? 'Copied!' : 'Copy failed — select and copy manually';
+      setTimeout(()=>{ btn.classList.remove('copied'); btn.textContent = original; }, 2200);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(currentPlain).then(()=>flash(true)).catch(()=>fallback());
+    } else { fallback(); }
+    function fallback(){
+      const ta = document.createElement('textarea');
+      ta.value = currentPlain;
+      ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); flash(true); }
+      catch(e){ flash(false); }
+      document.body.removeChild(ta);
+    }
+  }
+  $('copyTop').addEventListener('click', function(){ doCopy(this,'Copy'); });
+  $('copyMain').addEventListener('click', function(){ doCopy(this,'Copy prompt to clipboard'); });
+
+  $('resetBtn').addEventListener('click', ()=>{
+    form.reset();
+    // restore the default-checked deliverable
+    document.querySelector('input[name="deliver"][value="a complete facilitator lesson plan with timing"]').checked = true;
+    currentPlain = build();
+  });
+})();
+</script>
+</body>
+</html>
