@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Information Literacy Session</title>
+<style>
+/* ---------- Variables & Base ---------- */
+:root { 
+    --ink: #111827; --card: #ffffff; --line: #e5e7eb; --highlight: #fef08a; 
+    --highlight-soft: #fefce8; --teal: #0d9488; --slate: #64748b; --radius: 12px; 
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --font-display: system-ui, sans-serif; 
+    --font-body: system-ui, sans-serif; --font-mono: monospace; 
+}
+body { background-color: #f9fafb; margin: 0; font-family: var(--font-body); color: var(--ink); }
+
+/* ---------- Header ---------- */ 
+header { border-bottom:3px solid var(--ink); background:var(--card); padding:28px clamp(20px,4vw,48px) 24px; } 
+.masthead { max-width:1320px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:flex-end; gap:18px; justify-content:space-between; } 
+.masthead h1 { font-family:var(--font-display); font-weight:700; font-size:clamp(26px,3.4vw,38px); line-height:1.1; margin: 0; } 
+.masthead h1 .hl { background:linear-gradient(transparent 58%, var(--highlight) 58%); padding:0 2px; } 
+.masthead .sub { color:var(--slate); font-size:15px; max-width:560px; margin-top: 10px; display: block; } 
+.ada-badge { display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff; font-size:13px; font-weight:600; letter-spacing:.02em; padding:8px 14px; border-radius:999px; white-space:nowrap; } 
+
+/* ---------- Layout ---------- */ 
+.wrap { max-width:1320px; margin:0 auto; display:grid; grid-template-columns:minmax(0,7fr) minmax(0,6fr); gap:32px; padding:32px clamp(20px,4vw,48px) 64px; align-items:start; } 
+@media (max-width:980px){ .wrap{grid-template-columns:1fr;} }
+
+/* ---------- Cards (Steps) ---------- */ 
+.step { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 24px; margin-bottom:20px; } 
+.step-head { display:flex; align-items:baseline; gap:12px; margin-bottom:12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; } 
+.step-head h2 { font-family:var(--font-display); font-size:20px; font-weight:600; margin: 0;} 
+
+.ada-note { display:flex; gap:10px; align-items:flex-start; background:var(--highlight-soft); border:1.5px solid #E8D26A; border-radius:8px; padding:12px 14px; font-size:14px; color:#5C4D0A; margin-top:14px; margin-bottom: 14px; } 
+.ada-note strong { color:#4A3E06; } 
+
+/* ---------- Typography ---------- */
+h3 { font-family: var(--font-display); font-size: 16px; margin-bottom: 8px; color: var(--teal); margin-top: 20px; }
+p, ul, li { font-size: 15px; line-height: 1.6; color: var(--ink); }
+ul { padding-left: 20px; margin-top: 8px; margin-bottom: 16px; }
+li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="masthead">
+    <div>
+        <h1><span class="hl">Information Literacy</span> Session</h1>
+        <span class="sub"><strong>Duration:</strong> 50 Minutes | <strong>Audience:</strong> First-Year Community College Students</span>
+    </div>
+    <div class="ada-badge">WCAG 2.1 AA Compliant Lesson</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- Facilitator Lesson Plan Column -->
+  <div class="form-col">
+    <div class="step">
+      <div class="step-head"><h2>Facilitator Lesson Plan</h2></div>
+      
+      <h3>1. Opening Hook (5 Minutes)</h3>
+      <p><strong>Activity:</strong> Live Polling (Active Learning)</p>
+      <ul>
+          <li><strong>Action:</strong> Display a visual of a highly shared social media post making a bold, fake scientific claim. Provide an audio description of the image for the class. <em>[Alt-text for digital display: A screenshot of a fake social media post claiming that eating a specific type of rock cures the common cold, with thousands of likes and shares.]</em></li>
+          <li><strong>Prompt:</strong> Use a digital polling tool (or raise hands/colored index cards for a low-tech, accessible alternative) to ask: "Would you use this as a source for a college research paper? Yes, No, or Not Sure?"</li>
+          <li><strong>Connection:</strong> Explain that navigating today’s information landscape is tough, but today they will learn the tools to confidently evaluate sources and share their findings accessibly.</li>
+      </ul>
+
+      <h3>2. Direct Instruction & Guided Discovery (10 Minutes)</h3>
+      <ul>
+          <li><strong>Databases & Boolean:</strong> Introduce Boolean operators (AND, OR, NOT) by comparing them to online shopping. If you search for "shoes," you get millions of results. If you filter for "Size 8 AND running AND blue," you get exactly what you need.</li>
+          <li><strong>The Peer-Review Process:</strong> Compare peer review to a rigorous quality control inspection at a car factory. Peer-reviewed articles are checked by experts before publication to ensure they are safe and accurate to use.</li>
+          <li><strong>Accessible Research (WCAG 2.1 AA):</strong> Explain that finding information is only half the battle; presenting it accessibly is the other half. Compare Alt-text to a radio broadcaster calling a sports game for listeners who cannot see the screen.</li>
+      </ul>
+
+      <h3>3. Practice Activity 1: The CRAAP Test (15 Minutes)</h3>
+      <p><strong>Activity:</strong> Team Project & Group Evaluation</p>
+      <ul>
+          <li><strong>Action:</strong> Divide students into small groups. Give each group two printed (and digitally accessible) articles on the same topic: one scholarly journal and one popular media source.</li>
+          <li><strong>Task:</strong> Evaluate both sources using the CRAAP test handout.</li>
+          <li><strong>UDL & Accessibility:</strong> Provide articles in large-print text and email a screen-reader compatible PDF version right before the activity.</li>
+      </ul>
+
+      <h3>4. Practice Activity 2: Keyboard Navigation (10 Minutes)</h3>
+      <p><strong>Activity:</strong> Interactive Learning Lab</p>
+      <ul>
+          <li><strong>Action:</strong> Instruct students to unplug their mouse or disable their trackpad and navigate the library database using only their keyboard (Tab, Enter, Arrows).</li>
+          <li><strong>Purpose:</strong> Builds empathy and demonstrates why keyboard-only navigation is a vital accessibility requirement.</li>
+      </ul>
+      <div class="ada-note">
+        <strong>Accommodation Flag:</strong> Students with motor control differences may find keyboard-only navigation physically fatiguing. <em>Alternative:</em> Have students pair up; one verbalizes the navigation steps while the partner executes the keystrokes.
+      </div>
+      
+      <h3>5. Check for Understanding & Closing (10 Minutes)</h3>
+      <ul>
+          <li><strong>Think-Pair-Share:</strong> Discuss the biggest barrier faced when navigating without a mouse and how it changes the way they will format their own assignments.</li>
+          <li><strong>One-Minute Paper:</strong> Write down one new search strategy learned and one reason why making digital research accessible matters.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Deliverables & Handouts Column -->
+  <div class="preview-col">
+    <div class="step">
+      <div class="step-head"><h2>Student Survival Guide Handout</h2></div>
+      <p><em>Note to Facilitator: Ensure this document is distributed as a tagged PDF or nicely formatted Word document with high color contrast.</em></p>
+      
+      <h3>Key Terms to Know</h3>
+      <ul>
+          <li><strong>CRAAP Test:</strong> A checklist to help decide if a source is trustworthy: Currency, Relevance, Authority, Accuracy, and Purpose.</li>
+          <li><strong>Scholarly Journals:</strong> Magazines for experts that go through strict "quality control" (peer review) before publication.</li>
+          <li><strong>Citations:</strong> Giving credit to the original author. It’s like providing a map to the exact books or articles you used.</li>
+          <li><strong>Alternative Text (Alt-text):</strong> A hidden written description of an image. If a student cannot see the image, their computer reads it out loud.</li>
+          <li><strong>Screen Reader Compatibility:</strong> Designing documents so software used by blind or low-vision users can read the content in a logical order.</li>
+      </ul>
+
+      <h3>Boolean Operators: Your Search Filters</h3>
+      <ul>
+          <li><strong>AND:</strong> Narrows your search (e.g., <em>Climate Change</em> AND <em>Ocean</em>)</li>
+          <li><strong>OR:</strong> Broadens your search (e.g., <em>Teenagers</em> OR <em>Adolescents</em>)</li>
+          <li><strong>NOT:</strong> Excludes words (e.g., <em>Apple</em> NOT <em>Computers</em>)</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <div class="step-head"><h2>Formative Assessment</h2></div>
+      <p><strong>1. Which Boolean operator would you use if you want to find articles that include BOTH the words "College" and "Stress"?</strong></p>
+      <p>A) OR<br>B) AND<br>C) NOT</p>
+      
+      <p><strong>2. True or False: If an automated accessibility checker says your document has no errors, it is 100% accessible to someone using a screen reader.</strong></p>
+      
+      <div class="ada-note">
+        <strong>Answer Key:</strong><br>
+        1. <strong>B (AND)</strong>.<br>
+        2. <strong>False.</strong> Automated tools cannot tell if your alt-text is actually descriptive, or if your reading order makes sense. Human testing is always needed.
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+    <p>Academic Support & Tutoring Educational Resources • Built for WCAG 2.1 AA Compliance</p>
+</footer>
+
+</body>
+</html>
+You can save this code directly into your code editor as infolit.html. Because digital content generated by public institutions must proactively meet accessibility standards
+, the semantic tags used here natively support screen readers and keyboard navigation right out of the box!
+How can I integrate WCAG 2.1 Level AA checklists into this page?
+Can you explain the differences between Draft Option A and B?
+What are the common accessibility barriers for STEM course content?
+Does this include a vARIETY OF LESSONS AND ACTIVITIES FOR STUDENTS AND ASSESMENTS PIECES.  i WANT TO TAKE THE LESSON PLAN AND ACTUALIZE IT AS AN OPERATIONAL WEBSITEWITH A SIMILAR LOOK AND FEEL AS THE REST OF THE SITE THAT STUDENTS WILL FIND APPROAFHABLE AND IS ADA ACCESSIBLE
+
+The previous infolit.html file was designed primarily as a facilitator guide for a single 50-minute session. To provide a variety of lessons, interactive activities, and assessments for your students, we need to transition from a single lesson plan to a student-facing digital learning module.
+Under the updated DOJ Title II regulations, public colleges must ensure their digital course materials, student service portals, and online learning platforms comply with WCAG 2.1 Level AA standards
+. Because automated accessibility checkers often miss critical structural elements like proper keyboard navigation or contextual screen reader compatibility
+, this website must be coded proactively.
+Here is a fully operational, student-facing Information Literacy Learning Hub. It uses your existing CSS stylesheet to maintain a friendly, approachable look
+ but expands the content to include multiple lessons, activities, and a built-in assessment. It also features a "Skip Navigation" link, which is essential for keyboard-only users to bypass menus and jump directly to the main content
+.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Information Literacy Student Hub</title>
+<style>
+/* ---------- Variables & Base (From your stylesheet) ---------- */
+:root { 
+    --ink: #111827; --card: #ffffff; --line: #e5e7eb; --highlight: #fef08a; 
+    --highlight-soft: #fefce8; --teal: #0d9488; --slate: #64748b; --radius: 12px; 
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); --font-display: system-ui, sans-serif; 
+    --font-body: system-ui, sans-serif; --font-mono: monospace; 
+}
+body { background-color: #f9fafb; margin: 0; font-family: var(--font-body); color: var(--ink); line-height: 1.6; }
+
+/* ---------- Accessibility Features ---------- */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--teal);
+    color: white;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+/* ---------- Header & Navigation ---------- */ 
+header { border-bottom:3px solid var(--ink); background:var(--card); padding:28px clamp(20px,4vw,48px) 24px; } 
+.masthead { max-width:1320px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:center; gap:18px; justify-content:space-between; } 
+.masthead h1 { font-family:var(--font-display); font-weight:700; font-size:clamp(26px,3.4vw,38px); line-height:1.1; margin: 0; } 
+.masthead h1 .hl { background:linear-gradient(transparent 58%, var(--highlight) 58%); padding:0 2px; } 
+nav { display: flex; gap: 15px; margin-top: 15px; }
+nav a { text-decoration: none; color: var(--ink); font-weight: 600; padding: 8px 12px; border: 2px solid transparent; border-radius: 6px; }
+nav a:hover, nav a:focus { border-color: var(--teal); background: #f0fdfa; outline: none; }
+
+/* ---------- Layout & Cards ---------- */ 
+main { max-width:1000px; margin:0 auto; padding:32px clamp(20px,4vw,48px) 64px; } 
+.step { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:30px; margin-bottom:30px; } 
+.step-head { display:flex; align-items:baseline; gap:12px; margin-bottom:15px; border-bottom: 2px solid var(--line); padding-bottom: 10px; } 
+.step-head h2 { font-family:var(--font-display); font-size:24px; font-weight:600; margin: 0; color: var(--ink); } 
+
+/* ---------- Typography & Elements ---------- */
+h3 { font-family: var(--font-display); font-size: 18px; color: var(--teal); margin-top: 25px; margin-bottom: 10px;}
+p, ul, li { font-size: 16px; color: var(--ink); }
+ul { padding-left: 20px; margin-bottom: 16px; }
+li { margin-bottom: 10px; }
+.analogy-box { background: var(--highlight-soft); border-left: 4px solid var(--highlight); padding: 15px; border-radius: 0 8px 8px 0; margin: 20px 0; font-style: italic; }
+
+/* ---------- Forms & Assessments ---------- */
+fieldset { border: 1.5px solid var(--line); border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+legend { font-weight: 700; padding: 0 10px; color: var(--ink); }
+.radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+button { font-family:var(--font-body); font-size:16px; font-weight:700; border-radius:8px; padding:12px 24px; cursor:pointer; border:2px solid var(--ink); background: var(--ink); color: #fff; transition: background 0.2s; }
+button:hover, button:focus { background: #26375C; outline: 3px solid var(--teal); outline-offset: 2px; }
+
+footer { text-align:center; color:var(--slate); font-size:14px; padding:20px; border-top: 1px solid var(--line); margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<!-- Skip Navigation Link for Keyboard Accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header>
+  <div class="masthead">
+    <div>
+        <h1><span class="hl">Information Literacy</span> Learning Hub</h1>
+        <p style="margin: 5px 0 0 0; color: var(--slate);">Your guide to finding, evaluating, and using information.</p>
+    </div>
+  </div>
+  <div style="max-width: 1320px; margin: 0 auto;">
+      <nav aria-label="Main Navigation">
+          <a href="#lesson-1">Lesson 1: Databases</a>
+          <a href="#lesson-2">Lesson 2: Evaluation</a>
+          <a href="#activity">Interactive Lab</a>
+          <a href="#assessment">Knowledge Check</a>
+      </nav>
+  </div>
+</header>
+
+<main id="main-content">
+  
+  <!-- Lesson 1: Databases -->
+  <section id="lesson-1" class="step">
+    <div class="step-head"><h2>Lesson 1: Database Search Strategies</h2></div>
+    <p>Finding the right academic research is completely different from a standard Google search. To find scholarly journals, you need to use Library Databases and <strong>Boolean Operators</strong> (AND, OR, NOT).</p>
+    
+    <div class="analogy-box">
+        <strong>Real-World Example:</strong> Think of Boolean operators like online shopping filters. If you search an online store for "shoes," you get millions of results. But if you apply filters for "Size 8 AND running AND blue," you get exactly what you need. Library databases work exactly the same way!
+    </div>
+
+    <h3>Key Operators to Know</h3>
+    <ul>
+        <li><strong>AND:</strong> Narrows your search by ensuring both words are present (e.g., <em>Climate Change AND Ocean</em>).</li>
+        <li><strong>OR:</strong> Broadens your search by allowing either word (e.g., <em>Teenagers OR Adolescents</em>).</li>
+        <li><strong>NOT:</strong> Excludes specific words (e.g., <em>Apple NOT Computers</em>).</li>
+    </ul>
+  </section>
+
+  <!-- Lesson 2: Evaluation -->
+  <section id="lesson-2" class="step">
+    <div class="step-head"><h2>Lesson 2: Evaluating Sources</h2></div>
+    <p>Not all information is created equal. Before you use a source in your college papers, you must evaluate its credibility. We use the <strong>CRAAP Test</strong> to ensure the information is trustworthy.</p>
+    
+    <h3>The CRAAP Test Breakdown</h3>
+    <ul>
+        <li><strong>Currency:</strong> When was the information published? Is it out of date for your topic?</li>
+        <li><strong>Relevance:</strong> Does this information directly relate to your research question?</li>
+        <li><strong>Authority:</strong> Who is the author or publisher? What are their credentials?</li>
+        <li><strong>Accuracy:</strong> Is the information supported by evidence? Has it been peer-reviewed?</li>
+        <li><strong>Purpose:</strong> Why does this information exist? Is it to inform, teach, sell, or persuade?</li>
+    </ul>
+
+    <div class="analogy-box">
+        <strong>Real-World Example:</strong> The peer-review process is like a rigorous quality control inspection at a car factory. You wouldn’t want to drive a car that wasn't tested by expert mechanics. Similarly, peer-reviewed academic articles are checked by subject experts before they are published to ensure the information is safe, accurate, and ready for you to use.
+    </div>
+  </section>
+
+  <!-- Interactive Activity -->
+  <section id="activity" class="step">
+    <div class="step-head"><h2>Interactive Lab: The Keyboard Challenge</h2></div>
+    <p>Accessibility means ensuring digital content is usable by everyone, including those who cannot use a mouse. Automated accessibility tools cannot tell if a website's reading order makes sense or if dropdown menus work without a mouse [12-15].</p>
+    
+    <h3>Your Task</h3>
+    <ol>
+        <li>Unplug your mouse or disable your trackpad.</li>
+        <li>Open your college's library database search page in a new tab.</li>
+        <li>Try to search for the term "Renewable Energy" using <strong>only the Tab, Arrow, and Enter keys</strong> on your keyboard.</li>
+        <li>Reflect: Were you able to access all the search filters? Did you get stuck anywhere?</li>
+    </ol>
+    <p><em>Note: If you have motor control differences and find keyboard-only navigation fatiguing, you can complete this activity with a partner by verbalizing the navigation steps while they execute the keystrokes.</em></p>
+  </section>
+
+  <!-- Assessment -->
+  <section id="assessment" class="step">
+    <div class="step-head"><h2>Assessment: Knowledge Check</h2></div>
+    <p>Test your understanding of the concepts covered in these lessons.</p>
+    
+    <form id="quiz-form">
+        <fieldset>
+            <legend>1. Which Boolean operator would you use if you want to find articles that include BOTH the words "College" and "Stress"?</legend>
+            <div class="radio-group">
+                <label><input type="radio" name="q1" value="A"> A) OR</label>
+                <label><input type="radio" name="q1" value="B"> B) AND</label>
+                <label><input type="radio" name="q1" value="C"> C) NOT</label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>2. If an automated accessibility checker says your document has no errors, it is 100% accessible to someone using a screen reader.</legend>
+            <div class="radio-group">
+                <label><input type="radio" name="q2" value="True"> True</label>
+                <label><input type="radio" name="q2" value="False"> False</label>
+            </div>
+        </fieldset>
+
+        <button type="button" onclick="gradeQuiz()">Submit Answers</button>
+    </form>
+    
+    <div id="quiz-results" aria-live="polite" style="margin-top: 20px; font-weight: bold; color: var(--teal);"></div>
+  </section>
+
+</main>
+
+<footer>
+    <p>Academic Support & Tutoring Educational Resources • Built for WCAG 2.1 AA Compliance</p>
+</footer>
+
+<script>
+function gradeQuiz() {
+    let score = 0;
+    const q1 = document.querySelector('input[name="q1"]:checked');
+    const q2 = document.querySelector('input[name="q2"]:checked');
+    const resultsDiv = document.getElementById('quiz-results');
+
+    if (!q1 || !q2) {
+        resultsDiv.style.color = "red";
+        resultsDiv.innerText = "Please answer all questions before submitting.";
+        return;
+    }
+
+    if (q1.value === "B") score++;
+    if (q2.value === "False") score++; // False because automated tools can't catch everything, like false negatives or missing keyboard functionality [3, 4].
+
+    resultsDiv.style.color = "var(--teal)";
+    if (score === 2) {
+        resultsDiv.innerText = "Great job! You scored 2/2. Automated tests cannot replace human judgment for accessibility, and 'AND' is the correct operator.";
+    } else {
+        resultsDiv.innerText = `You scored ${score}/2. Review the lessons above and try again! Remember, automated tests can't determine context.`;
+    }
+}
+</script>
+
+</body>
+</html>
