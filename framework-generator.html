@@ -234,12 +234,15 @@
                         </div>
                     </div>
                 </label>
-                <select id="paradigm">
+                <select id="paradigm" onchange="toggleOtherParadigm()">
                     <option value="Positivist / Postpositivist">Positivist / Postpositivist</option>
                     <option value="Constructivist / Interpretivist">Constructivist / Interpretivist</option>
                     <option value="Critical">Critical</option>
                     <option value="Pragmatic / Mixed Methods">Pragmatic / Mixed Methods</option>
+                    <option value="Other">Other (Please specify)</option>
                 </select>
+                <!-- Hidden input field for the "Other" option -->
+                <input type="text" id="paradigm-other" placeholder="Type your research paradigm here..." style="display: none; margin-top: 0.5rem;">
             </div>
             
             <div class="form-row">
@@ -263,6 +266,12 @@
                         <option value="Black-and-white print version">Black-and-white print version</option>
                         <option value="Muted color-coded model">Muted color-coded model</option>
                         <option value="Whiteboard or marker style">Whiteboard or marker style</option>
+                        <!-- New Variety Options -->
+                        <option value="Minimalist wireframe">Minimalist wireframe</option>
+                        <option value="Modern infographic">Modern infographic</option>
+                        <option value="Chalkboard sketch">Chalkboard sketch</option>
+                        <option value="Corporate presentation slide">Corporate presentation slide</option>
+                        <option value="High-contrast accessibility mode">High-contrast accessibility mode</option>
                     </select>
                 </div>
             </div>
@@ -356,6 +365,19 @@
         if(window.innerWidth < 767) { closeSidebar(); }
     }
 
+    // Paradigm Toggle Logic for "Other" field
+    function toggleOtherParadigm() {
+        const paradigmSelect = document.getElementById('paradigm');
+        const paradigmOtherInput = document.getElementById('paradigm-other');
+        
+        if (paradigmSelect.value === 'Other') {
+            paradigmOtherInput.style.display = 'block';
+            paradigmOtherInput.focus();
+        } else {
+            paradigmOtherInput.style.display = 'none';
+        }
+    }
+
     // Accordion Logic
     function toggleAccordion(id) {
         const content = document.getElementById(id);
@@ -378,7 +400,13 @@
         const concepts = document.getElementById('concepts').value || '[LIST 3-7 CONCEPTS AND BRIEFLY DEFINE THEM]';
         const theory = document.getElementById('theory').value || '[NAME THE THEORY OR THEORIES]';
         const theoryExplain = document.getElementById('theory-explain').value;
-        const paradigm = document.getElementById('paradigm').value;
+        
+        // Check paradigm logic
+        let paradigm = document.getElementById('paradigm').value;
+        if (paradigm === 'Other') {
+            paradigm = document.getElementById('paradigm-other').value || 'an unspecified';
+        }
+
         const structure = document.getElementById('structure').value;
         const style = document.getElementById('style').value;
         const lineSolid = document.getElementById('line-solid').value;
