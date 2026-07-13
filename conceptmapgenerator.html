@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctoral Conceptual Framework Generator</title>
+    <style>
+        :root { --primary: #2563EB; --bg: #F8FAFC; --text: #1E293B; --border: #E2E8F0; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; margin: 0; padding: 2rem; }
+        .container { max-width: 850px; margin: 0 auto; background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h1, h2 { color: var(--primary); }
+        .nav { display: flex; gap: 1.5rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem; }
+        .nav button { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #64748B; font-weight: 600; padding: 0.5rem 0; }
+        .nav button.active { color: var(--primary); border-bottom: 3px solid var(--primary); margin-bottom: -17px; }
+        .page { display: none; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .form-group { margin-bottom: 1.5rem; background: #fff; }
+        .form-row { display: flex; gap: 1rem; margin-bottom: 0.5rem; }
+        .form-row > div { flex: 1; }
+        
+        label { display: flex; align-items: center; font-weight: 600; margin-bottom: 0.5rem; gap: 0.5rem; }
+        input[type="text"], textarea, select { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; margin-bottom: 0.5rem; }
+        input:focus, textarea:focus, select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        
+        .help-text { font-size: 0.875rem; color: #64748B; margin-top: 0.15rem; }
+        
+        /* Tooltip CSS */
+        .tooltip-wrap { position: relative; display: inline-block; cursor: help; color: var(--primary); font-size: 0.9rem; background: #EFF6FF; border-radius: 50%; width: 18px; height: 18px; text-align: center; line-height: 18px; }
+        .tooltip-text { visibility: hidden; width: 250px; background-color: #334155; color: #fff; text-align: left; border-radius: 6px; padding: 0.75rem; position: absolute; z-index: 1; bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: normal; line-height: 1.4; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #334155 transparent transparent transparent; }
+        .tooltip-wrap:hover .tooltip-text { visibility: visible; opacity: 1; }
+
+        .collapsible-header { cursor: pointer; color: var(--primary); font-weight: 600; user-select: none; margin-bottom: 0.5rem; display: inline-block; }
+        .collapsible-header:hover { text-decoration: underline; }
+        .collapsible-content { display: none; padding: 1rem; border-left: 3px solid var(--primary); background: #F8FAFC; border-radius: 0 6px 6px 0; margin-bottom: 1rem; }
+        .collapsible-content.open { display: block; }
+        
+        .btn { background: var(--primary); color: white; padding: 0.875rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background 0.2s; margin-top: 1rem; }
+        .btn:hover { background: #1D4ED8; }
+        
+        #output-section { margin-top: 2.5rem; padding: 1.5rem; background: #EFF6FF; border-radius: 8px; border: 1px solid #BFDBFE; display: none; }
+        #prompt-output { width: 100%; height: 350px; margin-top: 1rem; font-family: monospace; font-size: 0.95rem; background: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="nav">
+        <button class="active" onclick="switchPage('generator', event)">Prompt Generator</button>
+        <button onclick="switchPage('guide', event)">Educational Guide</button>
+    </div>
+
+    <!-- Generator Page -->
+    <div id="generator" class="page active">
+        <h1>Conceptual Framework Prompt Generator</h1>
+        <p>This tool helps you build a strong, logic-driven prompt to generate your study's visual framework using AI.</p>
+        
+        <div class="form-group">
+            <label for="purpose">1. Purpose Statement</label>
+            <textarea id="purpose" rows="2" placeholder="Paste your full purpose statement here..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="phenomenon">2. Central Phenomenon</label>
+            <input type="text" id="phenomenon" placeholder="e.g., The construction of possible selves...">
+        </div>
+
+        <div class="form-group">
+            <label for="concepts">3. Key Concepts</label>
+            <textarea id="concepts" rows="2" placeholder="List 3-7 core concepts and briefly define them..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="theory">4. Theoretical Framework</label>
+            <input type="text" id="theory" placeholder="Name the theory and what it helps explain...">
+            <textarea id="theory-explain" rows="2" placeholder="(Optional) How does this theory specifically explain your concepts?"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="paradigm">
+                5. Research Paradigm
+                <div class="tooltip-wrap">?
+                    <div class="tooltip-text">
+                        <strong>Positivist:</strong> Variables, measurable relationships, prediction.<br><br>
+                        <strong>Constructivist:</strong> Meaning-making, lived experience, evolving understanding.<br><br>
+                        <strong>Critical:</strong> Power, structures, access, institutional conditions.<br><br>
+                        <strong>Pragmatic:</strong> Problem-first, blended measurable and qualitative contexts.
+                    </div>
+                </div>
+            </label>
+            <select id="paradigm">
+                <option value="Positivist / Postpositivist">Positivist / Postpositivist</option>
+                <option value="Constructivist / Interpretivist">Constructivist / Interpretivist</option>
+                <option value="Critical">Critical</option>
+                <option value="Pragmatic / Mixed Methods">Pragmatic / Mixed Methods</option>
+            </select>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="structure">6. Visual Structure</label>
+                <select id="structure">
+                    <option value="Concept map">Concept map</option>
+                    <option value="Straight pathway">Straight pathway</option>
+                    <option value="Layered model">Layered model</option>
+                    <option value="Process or timeline">Process or timeline</option>
+                    <option value="Nested or ecological map">Nested or ecological map</option>
+                    <option value="Comparison or two-path model">Comparison or two-path model</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="style">7. Look and Feel</label>
+                <select id="style">
+                    <option value="Clean academic diagram">Clean academic diagram</option>
+                    <option value="Hand-drawn rough draft">Hand-drawn rough draft</option>
+                    <option value="Sticky-note workshop map">Sticky-note workshop map</option>
+                    <option value="Black-and-white print version">Black-and-white print version</option>
+                    <option value="Muted color-coded model">Muted color-coded model</option>
+                    <option value="Whiteboard or marker style">Whiteboard or marker style</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Line Styles Configuration -->
+        <div class="form-group">
+            <label>8. Line Style Meanings (Optional)</label>
+            <div class="help-text" style="margin-bottom:0.5rem;">Define what your lines represent (e.g., tested relationships vs. contextual influence).</div>
+            <div class="form-row">
+                <input type="text" id="line-solid" placeholder="Solid arrows mean...">
+                <input type="text" id="line-dashed" placeholder="Dashed/dotted lines mean...">
+            </div>
+        </div>
+
+        <!-- Process Timeline Accordion -->
+        <div class="form-group">
+            <div class="collapsible-header" onclick="toggleAccordion('process-accordion')">
+                + Add a Process Timeline (Optional)
+            </div>
+            <div id="process-accordion" class="collapsible-content">
+                <div class="help-text" style="margin-bottom:0.5rem;">Use this if your study examines transition, development, or change over time.</div>
+                <input type="text" id="process-before" placeholder="Before stage (e.g., initial experiences)...">
+                <input type="text" id="process-during" placeholder="During stage...">
+                <input type="text" id="process-after" placeholder="After stage (e.g., outcomes)...">
+            </div>
+        </div>
+
+        <button class="btn" onclick="generatePrompt()">Generate Prompt</button>
+
+        <div id="output-section">
+            <h2>Your AI Prompt</h2>
+            <p>Copy and paste the text below into your preferred AI generator. <strong>Be sure to attach the reference file <em>d6f08bce-92c4-4c73-a43b-7963e327ddb0.png</em> verbatim.</strong></p>
+            <textarea id="prompt-output" readonly></textarea>
+        </div>
+    </div>
+
+    <!-- Guide Page -->
+    <div id="guide" class="page">
+        <h1>Educational Guide: Building Your Framework</h1>
+        <h2>Conceptual vs. Theoretical</h2>
+        <p><strong>Conceptual Framework:</strong> A structure that organizes and guides the research process by identifying key variables, concepts, and relationships.</p>
+        <p><strong>Theoretical Framework:</strong> A set of established theories or perspectives that guide your approach to the research.</p>
+        
+        <h2>Step-by-Step Logic</h2>
+        <ol>
+            <li><strong>Identify the Central Phenomenon:</strong> What is the "thing" your study is really about?</li>
+            <li><strong>Identify Major Concepts:</strong> If you removed an idea from the framework, would the study fundamentally change? If not, leave it out.</li>
+            <li><strong>Consider the Paradigm:</strong> Your paradigm determines whether you emphasize measurable relationships (Positivist) or meaning-making and lived experience (Constructivist).</li>
+        </ol>
+    </div>
+</div>
+
+<script>
+    function switchPage(pageId, event) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function toggleAccordion(id) {
+        const content = document.getElementById(id);
+        content.classList.toggle('open');
+        const header = content.previousElementSibling;
+        if (content.classList.contains('open')) {
+            header.innerText = '- Remove Process Timeline';
+        } else {
+            header.innerText = '+ Add a Process Timeline (Optional)';
+            // Clear inputs when closed
+            document.getElementById('process-before').value = '';
+            document.getElementById('process-during').value = '';
+            document.getElementById('process-after').value = '';
+        }
+    }
+
+    function generatePrompt() {
+        const purpose = document.getElementById('purpose').value || '[PASTE PURPOSE STATEMENT]';
+        const phenomenon = document.getElementById('phenomenon').value || '[STATE IT IN ONE SENTENCE]';
+        const concepts = document.getElementById('concepts').value || '[LIST 3-7 CONCEPTS AND BRIEFLY DEFINE THEM]';
+        
+        const theory = document.getElementById('theory').value || '[NAME THE THEORY OR THEORIES]';
+        const theoryExplain = document.getElementById('theory-explain').value;
+        
+        const paradigm = document.getElementById('paradigm').value;
+        const structure = document.getElementById('structure').value;
+        const style = document.getElementById('style').value;
+        
+        const lineSolid = document.getElementById('line-solid').value;
+        const lineDashed = document.getElementById('line-dashed').value;
+
+        const processBefore = document.getElementById('process-before').value;
+        const processDuring = document.getElementById('process-during').value;
+        const processAfter = document.getElementById('process-after').value;
+
+        let prompt = `Create a conceptual framework for my study. Use a "${structure}" layout structure and render it with a "${style}" appearance. Keep the language clear and do not add concepts that I have not provided.\n\n`;
+        
+        prompt += `Purpose statement:\n${purpose}\n\n`;
+        prompt += `Study focus:\nThe central phenomenon or main relationship is: ${phenomenon}\n\n`;
+        prompt += `Include these key concepts or variables:\n${concepts}\n\n`;
+        
+        prompt += `Theoretical framework:\n${theory}. `;
+        if (theoryExplain) {
+            prompt += `\nHow the theory informs the study: ${theoryExplain}. `;
+        }
+        prompt += `\nPlace the theoretical framework above/around/beside the main model and show that it informs or frames the study. Do not make theories look like measured variables unless they are actually measured.\n\n`;
+        
+        prompt += `Research orientation:\nThis study uses a ${paradigm} approach. Reflect this in the visual emphasis (e.g., tested relationships for positivist, meaning-making for constructivist, power structures for critical).\n\n`;
+
+        if (lineSolid || lineDashed) {
+            prompt += `Line Style Meanings:\n`;
+            if (lineSolid) prompt += `- Solid lines indicate: ${lineSolid}\n`;
+            if (lineDashed) prompt += `- Dashed/dotted lines indicate: ${lineDashed}\n`;
+            prompt += `Please include a brief key explaining these line styles on the diagram.\n\n`;
+        }
+
+        if (processBefore || processDuring || processAfter) {
+            prompt += `Process Timeline (Flow of Events):\n`;
+            if (processBefore) prompt += `- Before: ${processBefore}\n`;
+            if (processDuring) prompt += `- During: ${processDuring}\n`;
+            if (processAfter) prompt += `- After: ${processAfter}\n\n`;
+        }
+
+        prompt += `Reference Layout:\nPlease strictly reference the layout style and arrangement seen in the attached file named "d6f08bce-92c4-4c73-a43b-7963e327ddb0.png".`;
+
+        document.getElementById('prompt-output').value = prompt;
+        document.getElementById('output-section').style.display = 'block';
+        
+        document.getElementById('output-section').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
