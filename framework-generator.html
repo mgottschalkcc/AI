@@ -21,22 +21,17 @@
     
     /* Responsive Grid */
     .view-section { display: none; max-width: 1200px; margin: 0 auto; }
-    .active-view { 
-        display: grid; 
-        grid-template-columns: 1fr 1fr; /* Desktop: Split */
-        gap: 2rem; 
-    }
-
-    @media (max-width: 900px) {
-        .active-view { grid-template-columns: 1fr; } /* Mobile/Laptop: Stacked */
-        .sidebar { display: none; } /* Could be hidden or collapsed */
-    }
+    .active-view { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 900px) { .active-view { grid-template-columns: 1fr; } .sidebar { display: none; } }
 
     .form-group { margin-bottom: 1.25rem; }
     label { font-size: 0.8rem; font-weight: 700; color: var(--navy); text-transform: uppercase; margin-bottom: 0.4rem; display: block; }
     input, textarea, select { width: 100%; padding: 0.75rem; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; background: var(--white); }
     .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; }
-    .begin-btn { background: var(--navy); color: var(--white); border: 2.5px solid var(--mod-accent); padding: 1rem; border-radius: 50px; font-weight: 700; cursor: pointer; width: 100%; }
+    
+    .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
+    .begin-btn { background: var(--navy); color: var(--white); border: 2.5px solid var(--mod-accent); padding: 1rem; border-radius: 50px; font-weight: 700; cursor: pointer; }
+    .reset-btn { background: transparent; color: var(--text-mid); border: 1.5px solid var(--border); padding: 1rem; border-radius: 50px; font-weight: 600; cursor: pointer; }
     
     .output-card { background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1.5px solid var(--border); position: sticky; top: 1rem; }
     #prompt-output { width: 100%; height: 450px; font-family: monospace; font-size: 0.85rem; padding: 1rem; border: 1px solid var(--border); background: #f9fafb; resize: none; }
@@ -76,7 +71,10 @@
                         <option value="Concept map">Concept map</option>
                     </select>
                 </div>
-                <button class="begin-btn" onclick="generatePrompt()">Generate APA Framework Prompt</button>
+                <div class="button-group">
+                    <button class="begin-btn" onclick="generatePrompt()">Generate APA Prompt</button>
+                    <button class="reset-btn" onclick="resetForm()">Reset Form</button>
+                </div>
             </div>
             <div class="output-card">
                 <h2>Generated Prompt</h2>
@@ -99,6 +97,17 @@
         document.getElementById('view-guide').classList.remove('active-view');
         document.getElementById('view-' + view).classList.add('active-view');
     }
+    
+    function resetForm() {
+        if (confirm("Are you sure you want to clear all your entries?")) {
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'checkbox') el.checked = false;
+                else el.value = '';
+            });
+            document.getElementById('prompt-output').value = '';
+        }
+    }
+
     function generatePrompt() {
         const paradigms = Array.from(document.querySelectorAll('#paradigm-options input:checked')).map(cb => cb.value).join(', ');
         const prompt = `[APA FORMATTING MANDATE: Professional APA 7th style.]
