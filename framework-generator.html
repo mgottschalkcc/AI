@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conceptual Framework Generator — AI for Educators</title>
+  <title>Conceptual Framework Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --navy: #0d2240; --navy-light: #16325e; --cyan: #0099bb; --cyan-bright: #00b4d8;
       --sky: #e8f4fb; --white: #ffffff; --text: #111827; --text-mid: #374151; --text-muted: #6b7280;
       --border: #e2eaf3; --mod-accent: #22c55e; --mod-bg: #f0fdf4; --mod-border: #bbf7d0;
-      --sidebar-w: 296px; --header-h: 62px;
+      --sidebar-w: 296px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--sky); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--sky); height: 100vh; display: flex; flex-direction: column; }
     
     /* Layout */
-    .top-bar { background: var(--navy); height: var(--header-h); display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+    .top-bar { background: var(--navy); height: 62px; display: flex; align-items: center; padding: 0 1.5rem; color: white; flex-shrink: 0; }
     .layout { display: flex; flex: 1; overflow: hidden; }
     .sidebar { width: var(--sidebar-w); background: var(--navy); display: flex; flex-direction: column; padding: 1rem; flex-shrink: 0; }
     .nav-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem; color: rgba(255,255,255,0.65); border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem; }
@@ -26,13 +26,15 @@
     .content-pane { flex: 1; overflow-y: auto; padding: 2rem; background: var(--white); }
     .view-section { display: none; max-width: 1200px; margin: 0 auto; }
     .active-view { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
-    @media (max-width: 1024px) { .active-view { grid-template-columns: 1fr; } }
+    @media (max-width: 1024px) { .active-view { grid-template-columns: 1fr; } .sidebar { display: none; } }
 
-    /* Form Styles */
+    /* Forms */
     .form-group { margin-bottom: 1.25rem; }
     label { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
-    input, textarea, select { width: 100%; padding: 0.8rem; border: 1.5px solid var(--border); border-radius: 8px; }
+    input, textarea, select { width: 100%; padding: 0.8rem; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; }
     .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; }
+    .collapsible-header { cursor: pointer; color: var(--cyan); font-weight: 700; font-size: 0.85rem; padding: 0.5rem; border: 1px solid var(--border); border-radius: 8px; }
+    .collapsible-content { display: none; padding: 1rem; background: var(--mod-bg); margin-top: 0.5rem; }
     .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
     .begin-btn { background: var(--navy); color: var(--white); border: 2.5px solid var(--mod-accent); padding: 0.8rem; border-radius: 50px; font-weight: 700; cursor: pointer; }
     .reset-btn { background: transparent; color: var(--text-mid); border: 1.5px solid var(--border); padding: 0.8rem; border-radius: 50px; cursor: pointer; }
@@ -46,7 +48,7 @@
 </head>
 <body>
 
-<header class="top-bar"><strong style="color:white;">Conceptual Framework Builder</strong></header>
+<header class="top-bar"><strong>Conceptual Framework Builder</strong></header>
 
 <div class="layout">
     <nav class="sidebar">
@@ -61,12 +63,10 @@
                 <div class="form-group"><label>Purpose Statement</label><textarea id="purpose" rows="2"></textarea></div>
                 <div class="form-group"><label>Central Phenomenon</label><input type="text" id="phenomenon"></div>
                 <div class="form-group"><label>Key Concepts</label><textarea id="concepts" rows="2"></textarea></div>
-                
                 <div class="form-group"><label>Theory & Components</label>
                     <input type="text" id="theory" placeholder="Theory Name..." style="margin-bottom:0.5rem;">
                     <textarea id="theory-components" rows="2" placeholder="List relevant tenets/constructs (context only, no labels)..."></textarea>
                 </div>
-                
                 <div class="form-group"><label>Research Paradigm</label>
                     <div class="checkbox-group" id="paradigm-options">
                         <label><input type="checkbox" value="Positivist"> Positivist</label>
@@ -76,7 +76,6 @@
                         <label><input type="checkbox" value="Pragmatic"> Pragmatic</label>
                     </div>
                 </div>
-
                 <div class="form-group"><label>Visual Structure</label>
                     <select id="structure">
                         <option value="Layered model">Layered model</option>
@@ -86,24 +85,15 @@
                         <option value="Concept map">Concept map</option>
                     </select>
                 </div>
-
-                <div class="form-group"><label>Look and Feel</label>
-                    <select id="style">
-                        <option value="Clean academic diagram">Clean academic diagram</option>
-                        <option value="Modern infographic">Modern infographic</option>
-                        <option value="Chalkboard sketch">Chalkboard sketch</option>
-                        <option value="Corporate presentation slide">Corporate presentation slide</option>
-                        <option value="Minimalist wireframe">Minimalist wireframe</option>
-                    </select>
-                </div>
-
-                <div class="form-group"><label>Line Style Meanings</label>
-                    <input type="text" id="line-solid" placeholder="Solid lines mean..." style="margin-bottom:0.5rem;">
-                    <input type="text" id="line-dashed" placeholder="Dashed/dotted lines mean...">
-                </div>
-
                 <div class="form-group"><label>Visual Legend (Shapes/Colors)</label><input type="text" id="legend" placeholder="e.g., Boxes = Variables, Circles = Context..."></div>
                 
+                <div class="collapsible-header" onclick="toggleAccordion('process-accordion')">+ Add Process Timeline</div>
+                <div id="process-accordion" class="collapsible-content">
+                    <input type="text" id="process-before" placeholder="Before stage..." style="margin-bottom:0.5rem;">
+                    <input type="text" id="process-during" placeholder="During stage..." style="margin-bottom:0.5rem;">
+                    <input type="text" id="process-after" placeholder="After stage...">
+                </div>
+
                 <div class="button-group">
                     <button class="begin-btn" onclick="generatePrompt()">Generate APA Prompt</button>
                     <button class="reset-btn" onclick="resetForm()">Reset</button>
@@ -118,14 +108,15 @@
                 <textarea id="prompt-output" readonly></textarea>
                 <div class="ai-tool-grid">
                     <div class="ai-tool-item"><a href="https://chatgpt.com" target="_blank">ChatGPT</a>: Best for iterative refinement.</div>
-                    <div class="ai-tool-item"><a href="https://ideogram.ai" target="_blank">Ideogram</a>: Best for clean text-based diagrams.</div>
+                    <div class="ai-tool-item"><a href="https://ideogram.ai" target="_blank">Ideogram</a>: Best for text-based diagrams.</div>
                 </div>
             </div>
         </div>
         
-        <div id="view-guide" class="view-section" style="display:block;">
+        <div id="view-guide" class="view-section">
             <div style="background:var(--white); padding:2rem; border-radius:12px;">
-                <h3>Target Visual Layout</h3>
+                <h3>Educational Guide</h3>
+                <p>Use the generator to define the study backbone. The AI will use your paradigm as a logic filter and generate an APA-compliant framework.</p>
                 <img src="Demo%20Conceptual%20Framework.png" alt="Reference Layout" style="width:100%; border-radius:8px; margin-top:1rem;">
             </div>
         </div>
@@ -137,11 +128,13 @@
         document.getElementById('view-generator').classList.remove('active-view');
         document.getElementById('view-guide').classList.remove('active-view');
         document.getElementById('view-' + view).classList.add('active-view');
-        
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         event.currentTarget.classList.add('active');
     }
-    
+    function toggleAccordion(id) {
+        const c = document.getElementById(id);
+        c.style.display = c.style.display === 'block' ? 'none' : 'block';
+    }
     function resetForm() {
         if (confirm("Clear all entries?")) {
             document.querySelectorAll('input, textarea, select').forEach(el => {
@@ -151,14 +144,11 @@
             document.getElementById('prompt-output').value = '';
         }
     }
-
     function copyToClipboard() {
-        const text = document.getElementById('prompt-output');
-        text.select();
-        document.execCommand('copy');
-        alert("Prompt copied to clipboard!");
+        const t = document.getElementById('prompt-output');
+        t.select(); document.execCommand('copy');
+        alert("Copied!");
     }
-
     function generatePrompt() {
         const paradigms = Array.from(document.querySelectorAll('#paradigm-options input:checked')).map(cb => cb.value).join(', ');
         const prompt = `[APA FORMATTING MANDATE: Professional APA 7th style. Use high academic standards, clean sans-serif typography, and precise layout alignment.]
@@ -166,17 +156,17 @@
 Create a conceptual framework for: ${document.getElementById('purpose').value}.
 Focus: ${document.getElementById('phenomenon').value}.
 Structure: ${document.getElementById('structure').value}.
-Visual Style: ${document.getElementById('style').value}.
 
 Paradigm Logic (Use as a filter for theoretical alignment; do not label on diagram): ${paradigms}.
 Theory Context: ${document.getElementById('theory').value}.
 Relevant Theory Components (Use for context, do not display as labels): ${document.getElementById('theory-components').value}.
 
-Line Styles:
-- Solid: ${document.getElementById('line-solid').value}
-- Dashed/Dotted: ${document.getElementById('line-dashed').value}
+Process Timeline:
+- Before: ${document.getElementById('process-before').value}
+- During: ${document.getElementById('process-during').value}
+- After: ${document.getElementById('process-after').value}
 
-Visual Legend (Apply these shape/color meanings): ${document.getElementById('legend').value}.
+Visual Legend: ${document.getElementById('legend').value}.
 
 Layout reference: https://mgottschalkcc.github.io/AI/Demo%20Conceptual%20Framework.png`;
         document.getElementById('prompt-output').value = prompt;
