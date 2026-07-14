@@ -1,189 +1,784 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conceptual Framework Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --navy: #0d2240; --navy-light: #16325e; --cyan: #0099bb; --cyan-bright: #00b4d8;
-      --orange: #e8700f; --sky: #e8f4fb; --white: #ffffff; --text: #111827;
-      --text-muted: #6b7280; --border: #e2eaf3; --mod-accent: #22c55e;
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--sky); height: 100vh; display: flex; margin: 0; }
-    
-    /* Layout components */
-    .sidebar { width: 280px; background: var(--navy); color: white; display: flex; flex-direction: column; padding: 1.5rem; }
-    .main-content { flex: 1; overflow-y: auto; padding: 2rem; }
-    .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 2rem; }
-    
-    /* Toggle switch */
-    .toggle-container { display: flex; background: var(--border); padding: 0.25rem; border-radius: 8px; width: fit-content; margin-bottom: 1.5rem; }
-    .toggle-btn { padding: 0.5rem 1rem; border: none; cursor: pointer; border-radius: 6px; font-weight: 600; background: transparent; }
-    .toggle-btn.active { background: var(--white); color: var(--navy); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    
-    /* Form elements */
-    .form-group { margin-bottom: 1.5rem; }
-    label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--navy); }
-    input, textarea, select { width: 100%; padding: 0.75rem; border: 1.5px solid var(--border); border-radius: 8px; background: #f9fafb; }
-    .error-msg { color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: none; }
-    
-    /* Wizard Steps */
-    .wizard-step { display: none; }
-    .wizard-step.active { display: block; }
-    
-    /* Utilities */
-    .hidden { display: none; }
-    .btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
-    .btn-primary { background: var(--navy); color: white; }
-    .btn-secondary { background: var(--cyan); color: white; }
-  </style>
-</head>
-<body>
-
-  <nav class="sidebar">
-    <h2 style="font-size: 1.25rem; margin-bottom: 2rem;">Framework Tool</h2>
-    <button onclick="app.router('generator')" class="btn" style="text-align: left; margin-bottom: 0.5rem;">✍️ Generator</button>
-    <button onclick="app.router('guide')" class="btn" style="text-align: left;">📚 Educational Guide</button>
-  </nav>
-
-  <main class="main-content" id="app-root">
-    <!-- View Router Injection Point -->
-  </main>
-
-  <script>
-    const app = {
-      state: {
-        view: 'generator',
-        mode: 'dashboard',
-        currentStep: 0,
-        theories: [{ id: Date.now(), name: '', desc: '' }]
-      },
-
-      init() {
-        const saved = localStorage.getItem('framework_data');
-        if (saved) this.state = { ...this.state, ...JSON.parse(saved) };
-        this.router('generator');
-      },
-
-      save() {
-        localStorage.setItem('framework_data', JSON.stringify(this.state));
-      },
-
-      router(view) {
-        this.state.view = view;
-        const root = document.getElementById('app-root');
-        if (view === 'generator') {
-          root.innerHTML = this.renderGenerator();
-        } else {
-          root.innerHTML = this.renderGuide();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conceptual Framework Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#0A192F',
+                        'navy-light': '#112240',
+                        sky: '#E6F1FF',
+                        cyan: '#64FFDA',
+                        'cyan-dark': '#00B4D8',
+                        white: '#FFFFFF',
+                        gray: {
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            600: '#4B5563',
+                            700: '#374151',
+                            800: '#1F2937',
+                            900: '#111827',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
         }
-      },
+    </script>
+    <style>
+        body { background-color: #F8FAFC; color: #111827; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
-      renderGenerator() {
-        return `
-          <div class="card">
-            <h1>Conceptual Framework Generator</h1>
-            <div class="toggle-container">
-              <button class="toggle-btn ${this.state.mode === 'dashboard' ? 'active' : ''}" onclick="app.setMode('dashboard')">Dashboard View</button>
-              <button class="toggle-btn ${this.state.mode === 'wizard' ? 'active' : ''}" onclick="app.setMode('wizard')">Wizard View</button>
+        /* Tooltip styling */
+        .tooltip-icon {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 18px; height: 18px; border-radius: 50%; background-color: #E6F1FF; color: #0A192F;
+            font-size: 11px; font-weight: bold; cursor: help; margin-left: 6px; position: relative;
+        }
+        .tooltip-icon:hover .tooltip-content { opacity: 1; visibility: visible; transform: translateY(0); }
+        .tooltip-content {
+            position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%) translateY(5px);
+            background-color: #0A192F; color: #fff; width: max-content; max-width: 280px; padding: 10px;
+            border-radius: 6px; font-size: 12px; font-weight: normal; line-height: 1.5; z-index: 50;
+            opacity: 0; visibility: hidden; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .tooltip-content::after {
+            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border-width: 5px; border-style: solid; border-color: #0A192F transparent transparent transparent;
+        }
+
+        /* Form elements */
+        .form-input, .form-textarea, .form-select {
+            width: 100%; padding: 0.75rem; border: 1px solid #D1D5DB; border-radius: 0.5rem;
+            background-color: #fff; color: #111827; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none; border-color: #00B4D8; box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.15);
+        }
+
+        /* Checkbox customization */
+        .custom-checkbox { width: 1.2rem; height: 1.2rem; border-radius: 4px; border: 1px solid #D1D5DB; accent-color: #00B4D8; }
+
+        /* Wizard/Dashboard Toggle */
+        .view-toggle {
+            display: inline-flex; background: #E5E7EB; border-radius: 9999px; padding: 0.25rem;
+        }
+        .view-btn {
+            padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600;
+            color: #4B5563; transition: all 0.2s; cursor: pointer; border: none; background: transparent;
+        }
+        .view-btn.active { background: #0A192F; color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        /* Wizard Mode Styles */
+        .wizard-mode .wizard-step { display: none; }
+        .wizard-mode .wizard-step.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .dashboard-mode .wizard-step { display: block !important; margin-bottom: 2rem; border-bottom: 1px solid #E5E7EB; padding-bottom: 2rem; }
+        .dashboard-mode .wizard-step:last-child { border-bottom: none; }
+        .dashboard-mode .wizard-nav { display: none; }
+
+        /* Accordion transition */
+        .accordion-content { transition: max-height 0.3s ease-out, opacity 0.3s ease-out; overflow: hidden; max-height: 0; opacity: 0; }
+        .accordion-content.open { max-height: 500px; opacity: 1; margin-top: 1rem; }
+
+        /* Validation Warning */
+        .validation-warn { color: #DC2626; font-size: 0.75rem; margin-top: 0.25rem; display: none; }
+        .validation-warn.visible { display: block; }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <header class="bg-navy text-white h-16 flex items-center px-4 md:px-6 shadow-md shrink-0 z-20">
+        <div class="flex items-center gap-4 w-full">
+            <button id="mobile-menu-btn" class="md:hidden text-white hover:text-cyan focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <div class="font-bold text-lg hidden sm:block">AI <span class="text-cyan">for Educators</span></div>
+            <span class="hidden sm:block text-gray-400 mx-2">|</span>
+            <div class="font-semibold text-sm truncate">Master Shell: Conceptual Framework Builder</div>
+            <a href="#" class="ml-auto text-sm text-cyan hover:text-white transition-colors flex items-center gap-1">
+                <span>← Back to Course</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-64 bg-navy-light text-gray-300 flex flex-col shrink-0 absolute md:relative z-10 h-full transition-transform transform -translate-x-full md:translate-x-0 shadow-xl md:shadow-none">
+            <div class="p-6">
+                <div class="text-xs uppercase tracking-wider text-gray-500 font-bold mb-4">Module Navigation</div>
+                <nav class="space-y-2">
+                    <button onclick="switchView('generator')" id="nav-generator" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-navy text-cyan border border-navy shadow-sm transition-all text-left font-medium">
+                        <span class="text-xl">✍️</span>
+                        <span>Prompt Generator</span>
+                    </button>
+                    <button onclick="switchView('guide')" id="nav-guide" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-navy text-gray-400 hover:text-white transition-all text-left font-medium">
+                        <span class="text-xl">📚</span>
+                        <span>Educational Guide</span>
+                    </button>
+                </nav>
             </div>
-            <div id="generator-content">
-              ${this.renderFormContent()}
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-full bg-gray-50 overflow-y-auto" id="main-scroll">
+            
+            <div id="view-generator" class="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8 block">
+                
+                <!-- Instructions & Toggle -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-navy mb-2">Conceptual Framework Builder</h1>
+                        <p class="text-gray-600 text-sm">How to use this page: Fill out the variables for your study to generate a highly detailed prompt. Paste the result into an AI tool to build your framework.</p>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" id="btn-dashboard" onclick="setMode('dashboard')">Dashboard View</button>
+                        <button class="view-btn" id="btn-wizard" onclick="setMode('wizard')">Wizard View</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                    <!-- Form Container -->
+                    <div class="xl:col-span-7 bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8" id="generator-form-container">
+                        <form id="framework-form" class="dashboard-mode">
+                            
+                            <!-- Step 1: Core Logic -->
+                            <div class="wizard-step active" id="step-1">
+                                <h2 class="text-lg font-bold text-navy border-b border-gray-100 pb-2 mb-4 flex items-center gap-2">
+                                    <span class="bg-sky text-navy px-2 py-0.5 rounded text-sm">Step 1</span> Core Logic
+                                </h2>
+                                
+                                <div class="mb-5">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                        Purpose Statement 
+                                        <div class="tooltip-icon">?<div class="tooltip-content">Paste your full purpose statement here. Gives the AI direction without inventing new concepts.</div></div>
+                                    </label>
+                                    <textarea id="purpose" class="form-textarea" rows="3" placeholder="The purpose of this study is to..."></textarea>
+                                    <div id="purpose-warn" class="validation-warn">Warning: Purpose statement is under 20 words. Please provide more detail for better AI generation.</div>
+                                </div>
+
+                                <div class="mb-5">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Central Phenomenon</label>
+                                    <textarea id="phenomenon" class="form-textarea" rows="2" placeholder="e.g., The construction of possible selves..."></textarea>
+                                    <p class="text-xs text-gray-500 mt-1">What is the study really trying to understand or examine?</p>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Key Concepts</label>
+                                    <textarea id="concepts" class="form-textarea" rows="3" placeholder="List 3-7 core concepts and briefly define them..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Theory & Paradigm -->
+                            <div class="wizard-step" id="step-2">
+                                <h2 class="text-lg font-bold text-navy border-b border-gray-100 pb-2 mb-4 flex items-center gap-2">
+                                    <span class="bg-sky text-navy px-2 py-0.5 rounded text-sm">Step 2</span> Framework & Paradigm
+                                </h2>
+
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Theoretical Framework</label>
+                                    <div id="theories-container" class="space-y-4">
+                                        <div class="theory-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                            <input type="text" class="form-input mb-3 theory-name" placeholder="Theory Name (e.g., Transformative Learning Theory)">
+                                            <textarea class="form-textarea theory-components" rows="2" placeholder="Relevant Components: How does this theory specifically explain your concepts?"></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addTheory()" class="mt-3 text-sm font-semibold text-cyan-dark hover:text-navy flex items-center gap-1 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        Add Theory
+                                    </button>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        Research Paradigm
+                                        <div class="tooltip-icon">?<div class="tooltip-content">Your paradigm determines whether you emphasize measurable relationships, meaning-making, or power structures.</div></div>
+                                    </label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="paradigm" value="Positivist" class="custom-checkbox"> <span class="text-sm">Positivist</span></label>
+                                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="paradigm" value="Postpositivist" class="custom-checkbox"> <span class="text-sm">Postpositivist</span></label>
+                                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="paradigm" value="Constructivist" class="custom-checkbox"> <span class="text-sm">Constructivist</span></label>
+                                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="paradigm" value="Critical" class="custom-checkbox"> <span class="text-sm">Critical</span></label>
+                                        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="paradigm" value="Pragmatic" class="custom-checkbox"> <span class="text-sm">Pragmatic</span></label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="paradigm-other-cb" name="paradigm" value="Other" class="custom-checkbox" onchange="toggleOtherParadigm()"> 
+                                            <span class="text-sm">Other</span>
+                                        </label>
+                                    </div>
+                                    <input type="text" id="paradigm-other-text" class="form-input hidden" placeholder="Specify other paradigm...">
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Visual Structure -->
+                            <div class="wizard-step" id="step-3">
+                                <h2 class="text-lg font-bold text-navy border-b border-gray-100 pb-2 mb-4 flex items-center gap-2">
+                                    <span class="bg-sky text-navy px-2 py-0.5 rounded text-sm">Step 3</span> Visual Structure & Design
+                                </h2>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Visual Structure</label>
+                                        <select id="structure" class="form-select">
+                                            <option value="">-- Select Structure --</option>
+                                            <option value="Layered model">Layered model</option>
+                                            <option value="Funnel model">Funnel model</option>
+                                            <option value="Path Analysis / Regression model">Path Analysis / Regression model</option>
+                                            <option value="Moderation/Mediation diagram">Moderation/Mediation diagram</option>
+                                            <option value="Concept map">Concept map</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Look and Feel</label>
+                                        <select id="look" class="form-select" onchange="toggleOtherLook()">
+                                            <option value="">-- Select Style --</option>
+                                            <option value="Clean Academic">Clean Academic</option>
+                                            <option value="Modern Infographic">Modern Infographic</option>
+                                            <option value="Minimalist Wireframe">Minimalist Wireframe</option>
+                                            <option value="Chalkboard Sketch">Chalkboard Sketch</option>
+                                            <option value="Sticky-note Map">Sticky-note Map</option>
+                                            <option value="Muted Color-coded">Muted Color-coded</option>
+                                            <option value="Corporate Presentation">Corporate Presentation</option>
+                                            <option value="Rough Hand-drawn">Rough Hand-drawn</option>
+                                            <option value="Other">Other...</option>
+                                        </select>
+                                        <input type="text" id="look-other-text" class="form-input mt-2 hidden" placeholder="Describe custom style...">
+                                    </div>
+                                </div>
+
+                                <div class="mb-5">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Color & Accessibility</label>
+                                    <select id="color-palette" class="form-select">
+                                        <option value="Pick the best colors for me (Auto-Accessibility standards)">Pick the best colors for me (Auto-Accessibility standards)</option>
+                                        <option value="High-Contrast Greyscale (For Print)">High-Contrast Greyscale (For Print)</option>
+                                        <option value="Cool Blues & Greens (Calming Academic)">Cool Blues & Greens (Calming Academic)</option>
+                                        <option value="Earth Tones (Warm & Grounded)">Earth Tones (Warm & Grounded)</option>
+                                        <option value="Vibrant Primary Colors (High Distinction)">Vibrant Primary Colors (High Distinction)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Line Configurator -->
+                                <div class="mb-5 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <label class="block text-sm font-bold text-navy mb-3">Line Configurator</label>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                        <select id="line-style" class="form-select text-sm"><option value="">Style (e.g., Solid)</option><option value="Solid">Solid</option><option value="Dashed">Dashed</option><option value="Dotted">Dotted</option></select>
+                                        <select id="line-size" class="form-select text-sm"><option value="">Size (e.g., Thin)</option><option value="Thin">Thin</option><option value="Medium">Medium</option><option value="Thick">Thick</option></select>
+                                        <input type="text" id="line-color" class="form-input text-sm" placeholder="Color (e.g., Black)">
+                                    </div>
+                                    <input type="text" id="line-meaning" class="form-input text-sm" placeholder="What does this line represent? (e.g., 'Tested Relationship')">
+                                </div>
+
+                                <!-- Process Timeline -->
+                                <div class="mb-5">
+                                    <button type="button" onclick="toggleAccordion()" class="w-full text-left font-bold text-navy bg-gray-100 hover:bg-gray-200 px-4 py-3 rounded-lg flex justify-between items-center transition-colors border border-gray-200">
+                                        <span>+ Add Process Timeline</span>
+                                        <span id="accordion-icon" class="text-xl leading-none">+</span>
+                                    </button>
+                                    <div id="timeline-accordion" class="accordion-content bg-white border border-gray-200 rounded-lg p-4">
+                                        <p class="text-xs text-gray-500 mb-3">Use this if your study examines transition, development, or change over time.</p>
+                                        <div class="space-y-3">
+                                            <input type="text" id="timeline-before" class="form-input text-sm" placeholder="Before stage...">
+                                            <input type="text" id="timeline-during" class="form-input text-sm" placeholder="During stage...">
+                                            <input type="text" id="timeline-after" class="form-input text-sm" placeholder="After stage...">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">APA Compliance</label>
+                                    <textarea id="apa-note" class="form-textarea" rows="2" placeholder="APA Figure Note (e.g., 'Note. This conceptual framework illustrates...')"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Wizard Navigation -->
+                            <div class="wizard-nav flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+                                <button type="button" id="btn-prev" onclick="changeStep(-1)" class="px-5 py-2 rounded-lg font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 hidden transition-colors">← Previous</button>
+                                <span class="text-sm font-medium text-gray-500 mx-auto" id="step-indicator">Step 1 of 3</span>
+                                <button type="button" id="btn-next" onclick="changeStep(1)" class="px-5 py-2 rounded-lg font-semibold text-white bg-navy hover:bg-navy-light transition-colors ml-auto">Next →</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Column -->
+                    <div class="xl:col-span-5 flex flex-col gap-6">
+                        <!-- Generator Action -->
+                        <div class="bg-navy rounded-xl shadow-lg border border-navy-light p-6 text-white sticky top-4">
+                            <h2 class="text-lg font-bold flex items-center gap-2 mb-4">
+                                <span>🚀</span> The AI Prompt Engine
+                            </h2>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Select Output Quality</label>
+                            <select id="quality-toggle" class="form-select bg-navy-light border-gray-600 text-white mb-4">
+                                <option value="Quick Draft">Quick Draft</option>
+                                <option value="APA Refined">APA Refined (Publication-Ready)</option>
+                            </select>
+                            
+                            <button onclick="generatePrompt()" class="w-full bg-cyan hover:bg-cyan-dark text-navy font-bold py-3 px-4 rounded-lg shadow-[0_4px_14px_0_rgba(100,255,218,0.39)] transition-all transform hover:-translate-y-0.5 mb-4">
+                                Generate Custom Prompt
+                            </button>
+
+                            <textarea id="prompt-output" readonly class="w-full h-48 form-textarea bg-white text-navy font-mono text-sm border-0 mb-4" placeholder="Your generated prompt will appear here..."></textarea>
+                            
+                            <div class="flex gap-2">
+                                <button onclick="copyPrompt()" class="flex-1 bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-3 rounded-md text-sm transition-colors flex justify-center items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    Copy
+                                </button>
+                                <button onclick="emailPrompt()" class="flex-1 bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-3 rounded-md text-sm transition-colors flex justify-center items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                    Email
+                                </button>
+                                <button onclick="resetForm()" class="bg-red-500/20 hover:bg-red-500/40 text-red-200 font-medium py-2 px-3 rounded-md text-sm transition-colors">
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recommended AI Tools Table -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div class="bg-gray-50 border-b border-gray-200 px-4 py-3">
+                                <h3 class="font-bold text-navy">Recommended AI Tools</h3>
+                            </div>
+                            <div class="p-0 overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="text-xs text-gray-500 bg-gray-50/50 uppercase border-b border-gray-100">
+                                        <tr><th class="px-4 py-2">Tool</th><th class="px-4 py-2">Best For</th><th class="px-4 py-2">Output Type</th><th class="px-4 py-2">Editable?</th></tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <tr class="hover:bg-sky/30">
+                                            <td class="px-4 py-3 font-medium text-navy"><a href="https://www.napkin.ai" target="_blank" class="hover:text-cyan-dark underline">Napkin AI</a></td>
+                                            <td class="px-4 py-3 text-gray-600">Turning paragraphs into diagrams</td><td class="px-4 py-3 text-gray-600">Vector Diagram</td><td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">Yes (Full control)</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-sky/30">
+                                            <td class="px-4 py-3 font-medium text-navy"><a href="https://chat.openai.com" target="_blank" class="hover:text-cyan-dark underline">ChatGPT</a></td>
+                                            <td class="px-4 py-3 text-gray-600">Brainstorming & Metaphors</td><td class="px-4 py-3 text-gray-600">Raster Image / Code</td><td class="px-4 py-3 text-gray-600">No (Image) / Yes (Code)</td>
+                                        </tr>
+                                        <tr class="hover:bg-sky/30">
+                                            <td class="px-4 py-3 font-medium text-navy"><a href="https://gemini.google.com" target="_blank" class="hover:text-cyan-dark underline">Gemini</a></td>
+                                            <td class="px-4 py-3 text-gray-600">Analyzing data to suggest visuals</td><td class="px-4 py-3 text-gray-600">Raster Image</td><td class="px-4 py-3"><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs">No</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-sky/30">
+                                            <td class="px-4 py-3 font-medium text-navy"><a href="https://miro.com/ai/" target="_blank" class="hover:text-cyan-dark underline">Miro AI</a></td>
+                                            <td class="px-4 py-3 text-gray-600">Collaborative mapping</td><td class="px-4 py-3 text-gray-600">Interactive Board</td><td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">Yes</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        `;
-      },
 
-      setMode(mode) {
-        this.state.mode = mode;
-        this.router('generator');
-      },
+            <div id="view-guide" class="hidden w-full max-w-4xl mx-auto p-4 md:p-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold text-navy mb-4 border-b pb-4 border-gray-100">Educational Guide: Framework Foundations</h2>
+                    
+                    <div class="bg-sky border-l-4 border-cyan-dark p-4 rounded-r-lg mb-8">
+                        <p class="text-navy font-medium">Build the study backbone before you design anything. This gives the AI enough direction to organize your thinking without inventing new concepts.</p>
+                    </div>
 
-      renderFormContent() {
-        const isDashboard = this.state.mode === 'dashboard';
-        return `
-          <form oninput="app.updateData(event)">
-            <div class="form-group">
-              <label>Purpose Statement</label>
-              <textarea id="purpose" onblur="app.validatePurpose(this.value)">${this.state.purpose || ''}</textarea>
-              <div id="purpose-error" class="error-msg">Purpose is too short. Please provide more detail.</div>
+                    <div class="mb-8">
+                        <h3 class="text-lg font-bold text-navy mb-3">Video Tutorial: Conceptual vs. Theoretical</h3>
+                        <p class="text-gray-600 text-sm mb-4">Dr. Elizabeth Yardley breaks down the differences between these frameworks and how they connect to your broader research paradigm.</p>
+                        
+                        <!-- 16:9 Aspect Ratio Video Container -->
+                        <div class="w-full bg-gray-900 rounded-lg overflow-hidden shadow-md border border-gray-200" style="aspect-ratio: 16 / 9;">
+                            <iframe class="w-full h-full" src="https://www.youtube.com/embed/lkOSTRVWFEM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-gray-50 border border-gray-200 p-5 rounded-xl">
+                            <h4 class="font-bold text-navy mb-2 flex items-center gap-2"><span>🎯</span> Conceptual Framework</h4>
+                            <p class="text-sm text-gray-600">A structure that organizes and guides the research process by identifying key variables, concepts, and relationships based on your specific study context.</p>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-200 p-5 rounded-xl">
+                            <h4 class="font-bold text-navy mb-2 flex items-center gap-2"><span>🔭</span> Theoretical Framework</h4>
+                            <p class="text-sm text-gray-600">A set of established theories or perspectives from existing literature that guide your approach to interpreting the research problem.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-navy mb-3">Essential Resources</h3>
+                        <div class="flex flex-col gap-3">
+                            <a href="https://owl.purdue.edu/owl/research_and_citation/apa_style/index.html" target="_blank" class="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-lg hover:border-cyan-dark hover:shadow-md transition-all group">
+                                <span class="bg-navy text-white p-2 rounded text-xs font-bold">APA 7</span>
+                                <div>
+                                    <h4 class="font-semibold text-navy group-hover:text-cyan-dark">Purdue OWL APA Guide</h4>
+                                    <p class="text-xs text-gray-500">Formatting requirements for figures and academic notes.</p>
+                                </div>
+                            </a>
+                            <a href="https://resources.nu.edu/c.php?g=1013602&p=7661246" target="_blank" class="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-lg hover:border-cyan-dark hover:shadow-md transition-all group">
+                                <span class="bg-navy text-white p-2 rounded text-xs font-bold">GUIDE</span>
+                                <div>
+                                    <h4 class="font-semibold text-navy group-hover:text-cyan-dark">National University Conceptual Frameworks Guide</h4>
+                                    <p class="text-xs text-gray-500">Comprehensive resources and examples for doctoral research.</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-            <div class="form-group">
-              <label>Central Phenomenon</label>
-              <input type="text" id="phenomenon" value="${this.state.phenomenon || ''}">
-            </div>
-            <!-- Theory Section -->
-            <div class="form-group">
-               <label>Theoretical Frameworks</label>
-               <div id="theories-list">
-                 ${this.state.theories.map((t, i) => `
-                   <div style="margin-bottom: 0.5rem; display: flex; gap: 0.5rem;">
-                     <input type="text" placeholder="Theory Name" value="${t.name}">
-                     <input type="text" placeholder="Description" value="${t.desc}">
-                   </div>
-                 `).join('')}
-               </div>
-               <button type="button" class="btn btn-secondary" onclick="app.addTheory()">+ Add Theory</button>
-            </div>
-            <div class="form-group">
-                <label>APA Figure Note</label>
-                <textarea id="figureNote">${this.state.figureNote || ''}</textarea>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="app.generateOutput()">Generate Prompt</button>
-          </form>
-          <div class="card" style="margin-top: 2rem;">
-            <h3>Prompt Output</h3>
-            <pre id="output" style="background: #f4f4f4; padding: 1rem;"></pre>
-            <button onclick="app.copyPrompt()">Copy to Clipboard</button>
-          </div>
-        `;
-      },
+        </main>
+    </div>
 
-      validatePurpose(val) {
-        const error = document.getElementById('purpose-error');
-        error.style.display = (val.length < 50) ? 'block' : 'none';
-      },
+    <script>
+        // --- Navigation Logic ---
+        function switchView(view) {
+            document.getElementById('view-generator').classList.add('hidden');
+            document.getElementById('view-generator').classList.remove('block');
+            document.getElementById('view-guide').classList.add('hidden');
+            
+            document.getElementById('nav-generator').className = 'w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-navy text-gray-400 hover:text-white transition-all text-left font-medium';
+            document.getElementById('nav-guide').className = 'w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-navy text-gray-400 hover:text-white transition-all text-left font-medium';
+            
+            if(view === 'generator') {
+                document.getElementById('view-generator').classList.remove('hidden');
+                document.getElementById('view-generator').classList.add('block');
+                document.getElementById('nav-generator').className = 'w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-navy text-cyan border border-navy shadow-sm transition-all text-left font-medium';
+            } else {
+                document.getElementById('view-guide').classList.remove('hidden');
+                document.getElementById('nav-guide').className = 'w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-navy text-cyan border border-navy shadow-sm transition-all text-left font-medium';
+            }
+            if(window.innerWidth < 768) toggleMobileMenu();
+        }
 
-      addTheory() {
-        this.state.theories.push({ id: Date.now(), name: '', desc: '' });
-        this.router('generator');
-      },
+        // Mobile Menu
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        function toggleMobileMenu() { sidebar.classList.toggle('-translate-x-full'); }
+        mobileBtn.addEventListener('click', toggleMobileMenu);
 
-      renderGuide() {
-        return `
-          <div class="card">
-            <h1>Educational Guide</h1>
-            <div style="aspect-ratio: 16/9; width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 2rem;">
-              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/lkOSTRVWFEM" title="APA Guide" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <ul>
-              <li><a href="https://owl.purdue.edu" target="_blank">Purdue OWL APA Guide</a></li>
-              <li><a href="https://www.ncu.edu" target="_blank">National University Conceptual Frameworks</a></li>
-            </ul>
-          </div>
-        `;
-      },
+        // --- Wizard vs Dashboard Logic ---
+        const formObj = document.getElementById('framework-form');
+        let currentStep = 1;
+        const totalSteps = 3;
 
-      generateOutput() {
-        const output = `
-          INSTRUCTIONS: Create a diagram based on the following:
-          Purpose: ${this.state.purpose || 'None provided'}
-          Phenomenon: ${this.state.phenomenon || 'None provided'}
-          REQUIREMENT: Please create a clear key/legend explaining all visual elements and connectors.
-        `;
-        document.getElementById('output').textContent = output;
-      },
-      
-      copyPrompt() {
-        navigator.clipboard.writeText(document.getElementById('output').textContent);
-        alert('Copied to clipboard!');
-      }
-    };
+        function setMode(mode) {
+            const btnDash = document.getElementById('btn-dashboard');
+            const btnWiz = document.getElementById('btn-wizard');
+            
+            if(mode === 'dashboard') {
+                formObj.className = 'dashboard-mode';
+                btnDash.classList.add('active');
+                btnDash.classList.remove('bg-transparent');
+                btnWiz.classList.remove('active');
+                // Ensure all steps are visible
+                document.querySelectorAll('.wizard-step').forEach(el => el.style.display = 'block');
+            } else {
+                formObj.className = 'wizard-mode';
+                btnWiz.classList.add('active');
+                btnDash.classList.remove('active');
+                // Reset to specific step styling
+                document.querySelectorAll('.wizard-step').forEach(el => el.style.display = '');
+                updateWizardUI();
+            }
+        }
 
-    window.onload = () => app.init();
-  </script>
+        function changeStep(dir) {
+            currentStep += dir;
+            if(currentStep < 1) currentStep = 1;
+            if(currentStep > totalSteps) currentStep = totalSteps;
+            updateWizardUI();
+        }
+
+        function updateWizardUI() {
+            document.querySelectorAll('.wizard-step').forEach((el, index) => {
+                if (index + 1 === currentStep) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+            
+            document.getElementById('btn-prev').style.display = currentStep === 1 ? 'none' : 'block';
+            document.getElementById('btn-next').style.display = currentStep === totalSteps ? 'none' : 'block';
+            document.getElementById('step-indicator').innerText = `Step ${currentStep} of ${totalSteps}`;
+        }
+
+        // --- Form Interactions ---
+        // Word Count Validator
+        document.getElementById('purpose').addEventListener('input', function(e) {
+            const text = e.target.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            const warnEl = document.getElementById('purpose-warn');
+            if(words > 0 && words < 20) warnEl.classList.add('visible');
+            else warnEl.classList.remove('visible');
+            saveState(); // Trigger autosave
+        });
+
+        // Dynamic Theories
+        function addTheory(nameVal = '', compVal = '') {
+            const container = document.getElementById('theories-container');
+            const item = document.createElement('div');
+            item.className = 'theory-item bg-gray-50 p-4 rounded-lg border border-gray-200 mt-3 relative';
+            item.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove(); saveState();" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 font-bold px-2">&times;</button>
+                <input type="text" class="form-input mb-3 theory-name" placeholder="Theory Name (e.g., Transformative Learning Theory)" value="${nameVal}">
+                <textarea class="form-textarea theory-components" rows="2" placeholder="Relevant Components: How does this theory specifically explain your concepts?">${compVal}</textarea>
+            `;
+            container.appendChild(item);
+            saveState();
+        }
+
+        function toggleOtherParadigm() {
+            const cb = document.getElementById('paradigm-other-cb');
+            const text = document.getElementById('paradigm-other-text');
+            if(cb.checked) text.classList.remove('hidden');
+            else { text.classList.add('hidden'); text.value = ''; }
+            saveState();
+        }
+
+        function toggleOtherLook() {
+            const select = document.getElementById('look');
+            const text = document.getElementById('look-other-text');
+            if(select.value === 'Other') text.classList.remove('hidden');
+            else { text.classList.add('hidden'); text.value = ''; }
+            saveState();
+        }
+
+        function toggleAccordion() {
+            const content = document.getElementById('timeline-accordion');
+            const icon = document.getElementById('accordion-icon');
+            content.classList.toggle('open');
+            icon.innerText = content.classList.contains('open') ? '−' : '+';
+        }
+
+        // --- Auto-Save using LocalStorage ---
+        function saveState() {
+            const state = {
+                purpose: document.getElementById('purpose').value,
+                phenomenon: document.getElementById('phenomenon').value,
+                concepts: document.getElementById('concepts').value,
+                theories: Array.from(document.querySelectorAll('.theory-item')).map(item => ({
+                    name: item.querySelector('.theory-name').value,
+                    components: item.querySelector('.theory-components').value
+                })),
+                paradigms: Array.from(document.querySelectorAll('input[name="paradigm"]:checked')).map(cb => cb.value),
+                paradigmOther: document.getElementById('paradigm-other-text').value,
+                structure: document.getElementById('structure').value,
+                look: document.getElementById('look').value,
+                lookOther: document.getElementById('look-other-text').value,
+                colorPalette: document.getElementById('color-palette').value,
+                lineStyle: document.getElementById('line-style').value,
+                lineSize: document.getElementById('line-size').value,
+                lineColor: document.getElementById('line-color').value,
+                lineMeaning: document.getElementById('line-meaning').value,
+                timelineBefore: document.getElementById('timeline-before').value,
+                timelineDuring: document.getElementById('timeline-during').value,
+                timelineAfter: document.getElementById('timeline-after').value,
+                apaNote: document.getElementById('apa-note').value,
+                quality: document.getElementById('quality-toggle').value
+            };
+            localStorage.setItem('cfBuilderState', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('cfBuilderState');
+            if(!saved) return;
+            try {
+                const state = JSON.parse(saved);
+                document.getElementById('purpose').value = state.purpose || '';
+                document.getElementById('phenomenon').value = state.phenomenon || '';
+                document.getElementById('concepts').value = state.concepts || '';
+                
+                // Theories
+                const theoriesContainer = document.getElementById('theories-container');
+                theoriesContainer.innerHTML = ''; // Clear default
+                if(state.theories && state.theories.length > 0) {
+                    state.theories.forEach(t => addTheory(t.name, t.components));
+                } else {
+                    addTheory(); // Add empty default
+                }
+
+                // Paradigms
+                if(state.paradigms) {
+                    document.querySelectorAll('input[name="paradigm"]').forEach(cb => {
+                        cb.checked = state.paradigms.includes(cb.value);
+                    });
+                }
+                document.getElementById('paradigm-other-text').value = state.paradigmOther || '';
+                toggleOtherParadigm();
+
+                document.getElementById('structure').value = state.structure || '';
+                document.getElementById('look').value = state.look || '';
+                document.getElementById('look-other-text').value = state.lookOther || '';
+                toggleOtherLook();
+                
+                document.getElementById('color-palette').value = state.colorPalette || 'Pick the best colors for me (Auto-Accessibility standards)';
+                
+                document.getElementById('line-style').value = state.lineStyle || '';
+                document.getElementById('line-size').value = state.lineSize || '';
+                document.getElementById('line-color').value = state.lineColor || '';
+                document.getElementById('line-meaning').value = state.lineMeaning || '';
+                
+                document.getElementById('timeline-before').value = state.timelineBefore || '';
+                document.getElementById('timeline-during').value = state.timelineDuring || '';
+                document.getElementById('timeline-after').value = state.timelineAfter || '';
+                
+                if(state.timelineBefore || state.timelineDuring || state.timelineAfter) {
+                    document.getElementById('timeline-accordion').classList.add('open');
+                    document.getElementById('accordion-icon').innerText = '−';
+                }
+
+                document.getElementById('apa-note').value = state.apaNote || '';
+                document.getElementById('quality-toggle').value = state.quality || 'Quick Draft';
+                
+                // Trigger initial validation UI if needed
+                document.getElementById('purpose').dispatchEvent(new Event('input'));
+
+            } catch(e) { console.error('Error loading state:', e); }
+        }
+
+        // Attach auto-save to global form input
+        document.getElementById('framework-form').addEventListener('input', saveState);
+        document.getElementById('framework-form').addEventListener('change', saveState);
+        document.getElementById('quality-toggle').addEventListener('change', saveState);
+
+
+        // --- Prompt Generator Engine ---
+        function generatePrompt() {
+            const state = JSON.parse(localStorage.getItem('cfBuilderState') || '{}');
+            let prompt = "";
+            const isRefined = state.quality === 'APA Refined';
+
+            // 1. Quality & Chain of Thought
+            if(isRefined) {
+                prompt += "ACT AS an expert academic visual designer and methodologist. Before generating any output, employ a Chain-of-Thought process: Logically map out the conceptual relationships, variables, and theories step-by-step. Ensure perfect alignment with the provided research paradigm before finalizing the visual arrangement.\n\n";
+            }
+
+            prompt += "Please create a conceptual framework diagram for my study based on the following detailed specifications:\n\n";
+
+            // 2. Core Logic
+            prompt += "### 1. CORE STUDY LOGIC\n";
+            prompt += `- Purpose Statement: "${state.purpose || '[Not provided]'}"\n`;
+            prompt += `- Central Phenomenon: ${state.phenomenon || '[Not provided]'}\n`;
+            prompt += `- Key Concepts to Map: ${state.concepts || '[Not provided]'}\n\n`;
+
+            // 3. Theories
+            prompt += "### 2. THEORETICAL FRAMEWORK\n";
+            if(state.theories && state.theories.length > 0) {
+                state.theories.forEach((t, i) => {
+                    if(t.name || t.components) {
+                        prompt += `- Theory ${i+1}: ${t.name || 'Unnamed'}\n  Components/Application: ${t.components || 'N/A'}\n`;
+                    }
+                });
+            } else {
+                prompt += "None specified.\n";
+            }
+            prompt += "\n";
+
+            // 4. Paradigm
+            prompt += "### 3. RESEARCH PARADIGM\n";
+            let paradigms = state.paradigms || [];
+            if(paradigms.includes('Other') && state.paradigmOther) {
+                paradigms = paradigms.filter(p => p !== 'Other');
+                paradigms.push(state.paradigmOther);
+            }
+            prompt += `- ${paradigms.length > 0 ? paradigms.join(', ') : '[Not specified]'}\n`;
+            prompt += `(Reflect this paradigm in the visual emphasis, e.g., measurable paths vs meaning-making.)\n\n`;
+
+            // 5. Visuals & Style
+            prompt += "### 4. VISUAL ARCHITECTURE & DESIGN\n";
+            prompt += `- Structural Layout: ${state.structure || 'Best fit for data'}\n`;
+            let look = state.look === 'Other' ? state.lookOther : state.look;
+            prompt += `- Look and Feel: ${look || 'Clean Academic'}\n`;
+            prompt += `- Color Palette: ${state.colorPalette || 'Standard Accessibility'}\n\n`;
+
+            // 6. Configurable Lines
+            if(state.lineStyle || state.lineSize || state.lineColor || state.lineMeaning) {
+                prompt += "### 5. LINE STYLING (MANDATORY LEGEND/KEY INCLUSION)\n";
+                prompt += `- Line Configuration: ${state.lineSize || ''} ${state.lineStyle || ''} ${state.lineColor || ''} lines\n`;
+                prompt += `- Meaning: These lines represent "${state.lineMeaning || 'relationships'}"\n\n`;
+            }
+
+            // 7. Process Timeline
+            if(state.timelineBefore || state.timelineDuring || state.timelineAfter) {
+                prompt += "### 6. PROCESS TIMELINE / STAGES\n";
+                if(state.timelineBefore) prompt += `- Before: ${state.timelineBefore}\n`;
+                if(state.timelineDuring) prompt += `- During: ${state.timelineDuring}\n`;
+                if(state.timelineAfter) prompt += `- After: ${state.timelineAfter}\n`;
+                prompt += "\n";
+            }
+
+            // 8. APA Formatting
+            if(state.apaNote) {
+                prompt += "### 7. APA COMPLIANCE\n";
+                prompt += `Include the following exact text as a Figure Note at the bottom of the diagram:\n"${state.apaNote}"\n\n`;
+            }
+
+            // 9. Hard Commands (Strict Requirements)
+            prompt += "### STRICT INSTRUCTIONS:\n";
+            prompt += "1. You MUST create a key/legend on the image explaining the line types, shapes, or color codes used.\n";
+            prompt += "2. You MUST use the following reference image URL as the structural baseline for your output layout: https://mgottschalkcc.github.io/AI/Demo%20Conceptual%20Framework.png\n";
+
+            document.getElementById('prompt-output').value = prompt;
+            
+            // Scroll to output on mobile
+            if(window.innerWidth < 1280) {
+                document.getElementById('prompt-output').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // --- Utilities ---
+        function copyPrompt() {
+            const output = document.getElementById('prompt-output');
+            if(!output.value) return;
+            output.select();
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const btn = event.currentTarget;
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = '✓ Copied!';
+            btn.classList.add('bg-green-600', 'text-white');
+            setTimeout(() => {
+                btn.innerHTML = origHTML;
+                btn.classList.remove('bg-green-600', 'text-white');
+            }, 2000);
+        }
+
+        function emailPrompt() {
+            const output = document.getElementById('prompt-output').value;
+            if(!output) { alert("Please generate a prompt first."); return; }
+            const subject = encodeURIComponent("My Custom AI Framework Prompt");
+            const body = encodeURIComponent(output);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        function resetForm() {
+            if(confirm('Are you sure you want to clear all data and start over?')) {
+                localStorage.removeItem('cfBuilderState');
+                document.getElementById('framework-form').reset();
+                document.getElementById('theories-container').innerHTML = '';
+                addTheory();
+                document.getElementById('prompt-output').value = '';
+                document.getElementById('timeline-accordion').classList.remove('open');
+                document.getElementById('accordion-icon').innerText = '+';
+                toggleOtherParadigm();
+                toggleOtherLook();
+                document.getElementById('purpose').dispatchEvent(new Event('input')); // reset warnings
+            }
+        }
+
+        // Init
+        window.onload = loadState;
+
+    </script>
 </body>
 </html>
