@@ -3,171 +3,187 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conceptual Framework Generator — AI for Educators</title>
+  <title>Conceptual Framework Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --navy: #0d2240; --navy-light: #16325e; --cyan: #0099bb; --cyan-bright: #00b4d8;
-      --sky: #e8f4fb; --white: #ffffff; --text: #111827; --text-mid: #374151; --text-muted: #6b7280;
-      --border: #e2eaf3; --mod-accent: #22c55e; --mod-bg: #f0fdf4; --mod-border: #bbf7d0;
-      --sidebar-w: 296px; --header-h: 62px;
+      --orange: #e8700f; --sky: #e8f4fb; --white: #ffffff; --text: #111827;
+      --text-muted: #6b7280; --border: #e2eaf3; --mod-accent: #22c55e;
     }
     *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, sans-serif; background: var(--sky); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--sky); height: 100vh; display: flex; margin: 0; }
     
-    /* Layout */
-    .top-bar { background: var(--navy); height: var(--header-h); display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; color: white; }
-    .layout { display: flex; flex: 1; overflow: hidden; }
-    .sidebar { width: var(--sidebar-w); background: var(--navy); display: flex; flex-direction: column; padding: 1rem; flex-shrink: 0; }
-    .nav-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem; color: rgba(255,255,255,0.65); border-radius: 8px; cursor: pointer; margin-bottom: 0.5rem; }
-    .nav-item.active { background: rgba(34,197,94,0.18); color: white; font-weight: 700; }
+    /* Layout components */
+    .sidebar { width: 280px; background: var(--navy); color: white; display: flex; flex-direction: column; padding: 1.5rem; }
+    .main-content { flex: 1; overflow-y: auto; padding: 2rem; }
+    .card { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 2rem; }
     
-    /* Content */
-    .content-pane { flex: 1; overflow-y: auto; padding: 2rem; background: var(--white); }
-    .view-section { display: none; }
-    .active-view { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
-    @media (max-width: 1024px) { .active-view { grid-template-columns: 1fr; } .sidebar { display: none; } }
-
-    /* Form UI */
-    .form-group { margin-bottom: 1.25rem; }
-    label { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
-    input, textarea, select { width: 100%; padding: 0.8rem; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; }
-    .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; }
-    .collapsible-header { cursor: pointer; color: var(--cyan); font-weight: 700; font-size: 0.85rem; padding: 0.5rem; border: 1px solid var(--border); border-radius: 8px; }
-    .collapsible-content { display: none; padding: 1rem; background: var(--mod-bg); margin-top: 0.5rem; }
-    .button-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1.5rem; }
-    .btn { padding: 0.8rem; border-radius: 50px; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); }
+    /* Toggle switch */
+    .toggle-container { display: flex; background: var(--border); padding: 0.25rem; border-radius: 8px; width: fit-content; margin-bottom: 1.5rem; }
+    .toggle-btn { padding: 0.5rem 1rem; border: none; cursor: pointer; border-radius: 6px; font-weight: 600; background: transparent; }
+    .toggle-btn.active { background: var(--white); color: var(--navy); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     
-    /* Output */
-    .output-card { background: var(--mod-bg); padding: 1.5rem; border-radius: 12px; border: 1.5px solid var(--mod-border); height: fit-content; }
-    #prompt-output { width: 100%; height: 300px; font-family: monospace; font-size: 0.85rem; padding: 1rem; border: 1px solid var(--border); background: var(--white); resize: none; margin-top: 1rem; }
+    /* Form elements */
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--navy); }
+    input, textarea, select { width: 100%; padding: 0.75rem; border: 1.5px solid var(--border); border-radius: 8px; background: #f9fafb; }
+    .error-msg { color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: none; }
+    
+    /* Wizard Steps */
+    .wizard-step { display: none; }
+    .wizard-step.active { display: block; }
+    
+    /* Utilities */
+    .hidden { display: none; }
+    .btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
+    .btn-primary { background: var(--navy); color: white; }
+    .btn-secondary { background: var(--cyan); color: white; }
   </style>
 </head>
 <body>
 
-<header class="top-bar"><strong>Conceptual Framework Builder</strong></header>
+  <nav class="sidebar">
+    <h2 style="font-size: 1.25rem; margin-bottom: 2rem;">Framework Tool</h2>
+    <button onclick="app.router('generator')" class="btn" style="text-align: left; margin-bottom: 0.5rem;">✍️ Generator</button>
+    <button onclick="app.router('guide')" class="btn" style="text-align: left;">📚 Educational Guide</button>
+  </nav>
 
-<div class="layout">
-    <nav class="sidebar">
-        <div class="nav-item active" onclick="switchView('generator')">✍️ Prompt Generator</div>
-        <div class="nav-item" onclick="switchView('guide')">📚 Educational Guide</div>
-        <a href="index.html" class="nav-item" style="text-decoration:none;">← Back to Course</a>
-    </nav>
+  <main class="main-content" id="app-root">
+    <!-- View Router Injection Point -->
+  </main>
 
-    <main class="content-pane">
-        <div id="view-generator" class="view-section active-view">
-            <div class="form-inputs">
-                <div class="form-group"><label>Purpose Statement</label><textarea id="purpose" rows="2"></textarea></div>
-                <div class="form-group"><label>Central Phenomenon</label><input type="text" id="phenomenon"></div>
-                <div class="form-group"><label>Key Concepts</label><textarea id="concepts" rows="2"></textarea></div>
-                
-                <div class="form-group"><label>Theory & Components</label>
-                    <input type="text" id="theory" placeholder="Theory Name..." style="margin-bottom:0.5rem;">
-                    <textarea id="theory-components" rows="2" placeholder="List relevant tenets/constructs (context only, no labels)..."></textarea>
-                </div>
-                
-                <div class="form-group"><label>Research Paradigm</label>
-                    <div class="checkbox-group" id="paradigm-options">
-                        <label><input type="checkbox" value="Positivist"> Positivist</label>
-                        <label><input type="checkbox" value="Postpositivist"> Postpositivist</label>
-                        <label><input type="checkbox" value="Constructivist"> Constructivist</label>
-                        <label><input type="checkbox" value="Critical"> Critical</label>
-                        <label><input type="checkbox" value="Pragmatic"> Pragmatic</label>
-                    </div>
-                </div>
+  <script>
+    const app = {
+      state: {
+        view: 'generator',
+        mode: 'dashboard',
+        currentStep: 0,
+        theories: [{ id: Date.now(), name: '', desc: '' }]
+      },
 
-                <div class="form-group"><label>Visual Structure</label>
-                    <select id="structure">
-                        <option value="Layered model">Layered model</option>
-                        <option value="Funnel model">Funnel model</option>
-                        <option value="Path Analysis / Regression model">Path Analysis / Regression model</option>
-                        <option value="Moderation/Mediation diagram">Moderation/Mediation diagram</option>
-                        <option value="Concept map">Concept map</option>
-                    </select>
-                </div>
+      init() {
+        const saved = localStorage.getItem('framework_data');
+        if (saved) this.state = { ...this.state, ...JSON.parse(saved) };
+        this.router('generator');
+      },
 
-                <div class="form-group"><label>Look and Feel</label>
-                    <select id="style" onchange="toggleOtherStyle()">
-                        <option value="Clean academic diagram">Clean academic diagram</option>
-                        <option value="Chalkboard sketch">Chalkboard sketch</option>
-                        <option value="Corporate presentation">Corporate presentation</option>
-                        <option value="Other">Other (Describe below)</option>
-                    </select>
-                    <input type="text" id="style-other" placeholder="Describe your style..." style="display:none; margin-top:0.5rem;">
-                </div>
+      save() {
+        localStorage.setItem('framework_data', JSON.stringify(this.state));
+      },
 
-                <div class="form-group"><label>APA Figure Note</label><textarea id="apa-note" placeholder="Explain symbols/abbreviations for APA note..."></textarea></div>
+      router(view) {
+        this.state.view = view;
+        const root = document.getElementById('app-root');
+        if (view === 'generator') {
+          root.innerHTML = this.renderGenerator();
+        } else {
+          root.innerHTML = this.renderGuide();
+        }
+      },
 
-                <div class="collapsible-header" onclick="toggleAccordion('process-accordion')">+ Add Process Timeline</div>
-                <div id="process-accordion" class="collapsible-content">
-                    <input type="text" id="process-before" placeholder="Before stage..." style="margin-bottom:0.5rem;">
-                    <input type="text" id="process-during" placeholder="During stage..." style="margin-bottom:0.5rem;">
-                    <input type="text" id="process-after" placeholder="After stage...">
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn" style="background:var(--navy); color:white;" onclick="generatePrompt()">Generate</button>
-                    <button class="btn" onclick="copyToClipboard()">📋 Copy</button>
-                    <button class="btn" onclick="emailPrompt()">📧 Email</button>
-                    <button class="btn" onclick="resetForm()">Reset</button>
-                </div>
+      renderGenerator() {
+        return `
+          <div class="card">
+            <h1>Conceptual Framework Generator</h1>
+            <div class="toggle-container">
+              <button class="toggle-btn ${this.state.mode === 'dashboard' ? 'active' : ''}" onclick="app.setMode('dashboard')">Dashboard View</button>
+              <button class="toggle-btn ${this.state.mode === 'wizard' ? 'active' : ''}" onclick="app.setMode('wizard')">Wizard View</button>
             </div>
-            
-            <div class="output-card">
-                <h2>Generated Prompt</h2>
-                <select id="quality" style="margin-top:0.5rem;"><option value="Draft">Quick Draft</option><option value="APA">APA Refined (Publication-Ready)</option></select>
-                <textarea id="prompt-output" readonly></textarea>
+            <div id="generator-content">
+              ${this.renderFormContent()}
             </div>
-        </div>
-        
-        <div id="view-guide" class="view-section">
-            <div style="background:var(--white); padding:2rem; border-radius:12px;">
-                <h3>Educational Guide</h3>
-                <p>Use the generator to define the study backbone. The AI will use your paradigm as a logic filter and generate an APA-compliant framework.</p>
-                <img src="Demo%20Conceptual%20Framework.png" alt="Reference Layout" style="width:100%; border-radius:8px; margin-top:1rem;">
-            </div>
-        </div>
-    </main>
-</div>
+          </div>
+        `;
+      },
 
-<script>
-    // State & Save
-    window.onload = () => {
-        const saved = JSON.parse(localStorage.getItem('savedFramework'));
-        if(saved) Object.keys(saved).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = saved[k]; });
+      setMode(mode) {
+        this.state.mode = mode;
+        this.router('generator');
+      },
+
+      renderFormContent() {
+        const isDashboard = this.state.mode === 'dashboard';
+        return `
+          <form oninput="app.updateData(event)">
+            <div class="form-group">
+              <label>Purpose Statement</label>
+              <textarea id="purpose" onblur="app.validatePurpose(this.value)">${this.state.purpose || ''}</textarea>
+              <div id="purpose-error" class="error-msg">Purpose is too short. Please provide more detail.</div>
+            </div>
+            <div class="form-group">
+              <label>Central Phenomenon</label>
+              <input type="text" id="phenomenon" value="${this.state.phenomenon || ''}">
+            </div>
+            <!-- Theory Section -->
+            <div class="form-group">
+               <label>Theoretical Frameworks</label>
+               <div id="theories-list">
+                 ${this.state.theories.map((t, i) => `
+                   <div style="margin-bottom: 0.5rem; display: flex; gap: 0.5rem;">
+                     <input type="text" placeholder="Theory Name" value="${t.name}">
+                     <input type="text" placeholder="Description" value="${t.desc}">
+                   </div>
+                 `).join('')}
+               </div>
+               <button type="button" class="btn btn-secondary" onclick="app.addTheory()">+ Add Theory</button>
+            </div>
+            <div class="form-group">
+                <label>APA Figure Note</label>
+                <textarea id="figureNote">${this.state.figureNote || ''}</textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="app.generateOutput()">Generate Prompt</button>
+          </form>
+          <div class="card" style="margin-top: 2rem;">
+            <h3>Prompt Output</h3>
+            <pre id="output" style="background: #f4f4f4; padding: 1rem;"></pre>
+            <button onclick="app.copyPrompt()">Copy to Clipboard</button>
+          </div>
+        `;
+      },
+
+      validatePurpose(val) {
+        const error = document.getElementById('purpose-error');
+        error.style.display = (val.length < 50) ? 'block' : 'none';
+      },
+
+      addTheory() {
+        this.state.theories.push({ id: Date.now(), name: '', desc: '' });
+        this.router('generator');
+      },
+
+      renderGuide() {
+        return `
+          <div class="card">
+            <h1>Educational Guide</h1>
+            <div style="aspect-ratio: 16/9; width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 2rem;">
+              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/lkOSTRVWFEM" title="APA Guide" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <ul>
+              <li><a href="https://owl.purdue.edu" target="_blank">Purdue OWL APA Guide</a></li>
+              <li><a href="https://www.ncu.edu" target="_blank">National University Conceptual Frameworks</a></li>
+            </ul>
+          </div>
+        `;
+      },
+
+      generateOutput() {
+        const output = `
+          INSTRUCTIONS: Create a diagram based on the following:
+          Purpose: ${this.state.purpose || 'None provided'}
+          Phenomenon: ${this.state.phenomenon || 'None provided'}
+          REQUIREMENT: Please create a clear key/legend explaining all visual elements and connectors.
+        `;
+        document.getElementById('output').textContent = output;
+      },
+      
+      copyPrompt() {
+        navigator.clipboard.writeText(document.getElementById('output').textContent);
+        alert('Copied to clipboard!');
+      }
     };
-    function autoSave() {
-        const data = {}; document.querySelectorAll('input, textarea, select').forEach(el => data[el.id] = el.value);
-        localStorage.setItem('savedFramework', JSON.stringify(data));
-    }
-    document.addEventListener('input', autoSave);
 
-    function switchView(view) {
-        document.getElementById('view-generator').classList.remove('active-view');
-        document.getElementById('view-guide').classList.remove('active-view');
-        document.getElementById('view-' + view).classList.add('active-view');
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-    }
-    function toggleOtherStyle() { document.getElementById('style-other').style.display = document.getElementById('style').value === 'Other' ? 'block' : 'none'; }
-    function toggleAccordion(id) { document.getElementById(id).style.display = document.getElementById(id).style.display === 'block' ? 'none' : 'block'; }
-    function resetForm() { if(confirm("Clear everything?")) { localStorage.clear(); location.reload(); } }
-    function copyToClipboard() { const t = document.getElementById('prompt-output'); t.select(); document.execCommand('copy'); alert("Copied!"); }
-    function emailPrompt() { const b = encodeURIComponent(document.getElementById('prompt-output').value); window.location.href = `mailto:?subject=Conceptual Framework Prompt&body=${b}`; }
-
-    function generatePrompt() {
-        const paradigms = Array.from(document.querySelectorAll('#paradigm-options input:checked')).map(cb => cb.value).join(', ');
-        const style = document.getElementById('style').value === 'Other' ? document.getElementById('style-other').value : document.getElementById('style').value;
-        const note = document.getElementById('apa-note').value;
-        const q = document.getElementById('quality').value;
-        
-        let prompt = q === 'APA' ? `[APA 7th FORMATTING MANDATE: Professional Figure.]\nChain of Thought: Plan then render in APA style.\n` : `Draft Prompt:\n`;
-        prompt += `Purpose: ${document.getElementById('purpose').value}\nPhenomenon: ${document.getElementById('phenomenon').value}\nStructure: ${document.getElementById('structure').value}\nStyle: ${style}\nParadigms (Filters): ${paradigms}\nTheory: ${document.getElementById('theory').value}\nComponents (Context only): ${document.getElementById('theory-components').value}\n`;
-        if(note) prompt += `APA Note: *Note.* ${note}\n`;
-        prompt += `Reference: https://mgottschalkcc.github.io/AI/Demo%20Conceptual%20Framework.png`;
-        
-        document.getElementById('prompt-output').value = prompt;
-    }
-</script>
+    window.onload = () => app.init();
+  </script>
 </body>
 </html>
