@@ -3,469 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conceptual Framework Generator — AI for Educators</title>
-  <meta name="description" content="Turn your study logic into an AI-assisted visual layout." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <title>Conceptual Framework Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy:        #0d2240;
-      --navy-light:  #16325e;
-      --cyan:        #0099bb;
-      --cyan-bright: #00b4d8;
-      --orange:      #e8700f;
-      --sky:         #e8f4fb;
-      --white:       #ffffff;
-      --text:        #111827;
-      --text-mid:    #374151;
-      --text-muted:  #6b7280;
-      --border:      #e2eaf3;
-      --shadow-sm:   0 1px 4px rgba(13,34,64,0.08);
-      --sidebar-w:   296px;
-      --header-h:    62px;
-      --mod-accent:  #22c55e;
-      --mod-bg:      #f0fdf4;
-      --mod-border:  #bbf7d0;
+      --navy: #0d2240; --cyan-bright: #00b4d8; --sky: #e8f4fb; --white: #ffffff;
+      --text: #111827; --border: #e2eaf3; --mod-accent: #22c55e; --mod-bg: #f0fdf4; --mod-border: #bbf7d0;
+      --sidebar-w: 296px; --header-h: 62px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
-
-    body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--sky); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+    body { font-family: 'Inter', sans-serif; background: var(--sky); height: 100vh; display: flex; flex-direction: column; }
 
     /* Top Bar */
-    .top-bar { background: var(--navy); height: var(--header-h); display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; box-shadow: 0 2px 12px rgba(0,0,0,0.22); flex-shrink: 0; z-index: 100; position: relative; }
-    .hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; background: none; border: none; cursor: pointer; padding: 6px; border-radius: 6px; flex-shrink: 0; }
-    .hamburger span { display: block; width: 22px; height: 2px; background: var(--white); border-radius: 2px; transition: transform 0.25s, opacity 0.25s; }
-    .top-bar-left { display: flex; align-items: center; gap: 0.65rem; flex: 1; min-width: 0; }
-    .home-link { color: var(--white); text-decoration: none; font-weight: 800; font-size: 0.95rem; white-space: nowrap; flex-shrink: 0; }
-    .home-link span { color: var(--cyan-bright); }
-    .breadcrumb-sep { color: rgba(255,255,255,0.28); font-size: 0.9rem; flex-shrink: 0; }
-    .breadcrumb-current { color: rgba(255,255,255,0.68); font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .module-badge { margin-left: auto; flex-shrink: 0; background: var(--mod-bg); border: 1.5px solid var(--mod-border); color: var(--navy); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.28rem 0.8rem; border-radius: 20px; }
+    .top-bar { background: var(--navy); height: var(--header-h); display: flex; align-items: center; padding: 0 1.5rem; color: var(--white); flex-shrink: 0; }
+    .hamburger { display: none; background: none; border: none; cursor: pointer; color: white; margin-right: 1rem; }
 
-    /* Layout & Sidebar */
+    /* Layout */
     .layout { display: flex; flex: 1; overflow: hidden; }
-    .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--navy); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; transition: transform 0.3s ease; z-index: 50; }
-    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 49; }
-    .sidebar-overlay.visible { display: block; }
-    .sidebar-hero { padding: 1.4rem 1.1rem 1rem; background: linear-gradient(160deg, #16325e 0%, #0d2240 100%); border-bottom: 1px solid rgba(255,255,255,0.07); }
-    .sidebar-mod-pill { display: inline-flex; align-items: center; background: var(--mod-bg); border: 1.5px solid var(--mod-border); color: var(--navy); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.22rem 0.7rem; border-radius: 20px; margin-bottom: 0.65rem; }
-    .sidebar-mod-emoji { font-size: 1.5rem; margin-bottom: 0.3rem; display: block; }
-    .sidebar-mod-title { font-size: 0.92rem; font-weight: 800; color: var(--white); line-height: 1.3; }
-    .sidebar-mod-sub { font-size: 0.73rem; color: rgba(255,255,255,0.45); margin-top: 0.2rem; }
-    
-    .sidebar-nav { padding: 0.8rem 0.65rem; flex: 1; }
-    .sidebar-nav-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.32); padding: 0.5rem 0.65rem 0.4rem; }
-    
-    .nav-item { display: flex; align-items: center; gap: 0.65rem; width: 100%; padding: 0.7rem 0.85rem; margin-bottom: 0.18rem; background: none; border: none; border-radius: 10px; cursor: pointer; text-align: left; color: rgba(255,255,255,0.65); font-family: inherit; font-size: 0.855rem; font-weight: 500; transition: all 0.18s; position: relative; }
-    .nav-item.active { background: rgba(34,197,94,0.18); color: var(--white); font-weight: 700; }
-    .nav-item.active::before { content: ''; position: absolute; left: 0; top: 22%; bottom: 22%; width: 3px; background: var(--mod-accent); border-radius: 0 3px 3px 0; }
-    .nav-item-icon { font-size: 1.05rem; flex-shrink: 0; width: 20px; text-align: center; }
-    .nav-item-text { flex: 1; }
+    .sidebar { width: var(--sidebar-w); background: var(--navy); color: white; display: flex; flex-direction: column; padding: 1rem; }
+    .nav-item { display: block; padding: 0.75rem; color: #a1a1aa; text-decoration: none; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; }
+    .nav-item.active { background: rgba(34,197,94,0.18); color: white; font-weight: 700; }
 
-    .sidebar-footer { padding: 0.75rem 0.65rem 1rem; border-top: 1px solid rgba(255,255,255,0.07); }
-    .sidebar-footer a { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.38); text-decoration: none; font-size: 0.78rem; font-weight: 600; padding: 0.55rem 0.75rem; border-radius: 8px; transition: all 0.2s; }
-    .sidebar-footer a:hover { color: var(--white); background: rgba(255,255,255,0.06); }
+    /* Main Content */
+    .content-pane { flex: 1; overflow-y: auto; padding: 2rem; }
+    .view-section { display: none; max-width: 1200px; margin: 0 auto; }
+    .active-view { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 
-    /* Main Content Area */
-    .content-pane { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: var(--white); min-width: 0; scroll-behavior: smooth; }
-    
-    .landing-hero { background: linear-gradient(145deg, var(--mod-bg) 0%, #f5fff8 60%, var(--white) 100%); border-bottom: 2px solid var(--mod-border); padding: 2.8rem 2.5rem 2.2rem; text-align: center; flex-shrink: 0; }
-    .landing-emoji { font-size: 3.2rem; display: block; line-height: 1; margin-bottom: 0.75rem; }
-    .landing-pill { display: inline-flex; align-items: center; background: var(--mod-bg); border: 1.5px solid var(--mod-border); color: var(--navy); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.22rem 0.9rem; border-radius: 20px; margin-bottom: 0.75rem; }
-    .landing-title { font-size: 1.85rem; font-weight: 800; color: var(--navy); line-height: 1.2; margin-bottom: 0.45rem; }
-    .landing-tagline { font-size: 0.95rem; color: var(--text-mid); font-style: italic; }
+    /* Form Styles */
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--navy); text-transform: uppercase; margin-bottom: 0.4rem; }
+    input, textarea, select { width: 100%; padding: 0.75rem; border: 1.5px solid var(--border); border-radius: 8px; font-family: inherit; }
+    .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .begin-btn { background: var(--navy); color: var(--white); border: 2.5px solid var(--mod-accent); padding: 1rem; border-radius: 50px; font-weight: 700; cursor: pointer; width: 100%; }
 
-    /* View Toggling */
-    .view-section { display: none; }
-    .view-section.active-grid { display: grid; }
-    .view-section.active-block { display: block; }
+    /* Output */
+    .output-card { background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1.5px solid var(--border); position: sticky; top: 1rem; }
+    #prompt-output { width: 100%; height: 400px; font-family: monospace; font-size: 0.85rem; padding: 1rem; border: 1px solid var(--border); background: #f9fafb; }
 
-    /* Split Screen Generator Form Styles */
-    .split-workspace { grid-template-columns: 1fr 1fr; gap: 2.5rem; padding: 2.5rem; max-width: 1400px; margin: 0 auto; width: 100%; align-items: start; }
-    .form-inputs-column { display: flex; flex-direction: column; gap: 1.75rem; }
-    
-    .form-group { margin-bottom: 0; }
-    .form-row { display: flex; gap: 1rem; }
-    .form-row > div { flex: 1; }
-    
-    label { display: flex; align-items: center; font-size: 0.85rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; gap: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    input[type="text"], textarea, select { width: 100%; padding: 0.85rem; border: 1.5px solid var(--border); border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 0.9rem; color: var(--text); background: var(--sky); transition: all 0.2s; margin-bottom: 0.25rem; }
-    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--cyan-bright); background: var(--white); box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1); }
-    
-    .help-text { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-top: 0.15rem; line-height: 1.4; }
-
-    /* Tooltip */
-    .tooltip-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: help; color: var(--navy); font-size: 0.75rem; background: var(--mod-bg); border: 1px solid var(--mod-border); border-radius: 50%; width: 20px; height: 20px; font-weight: 800; }
-    .tooltip-text { visibility: hidden; width: 260px; background-color: var(--navy); color: var(--white); text-align: left; border-radius: 8px; padding: 1rem; position: absolute; z-index: 10; bottom: 130%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.2s; font-size: 0.8rem; font-weight: normal; line-height: 1.5; box-shadow: 0 4px 12px rgba(0,0,0,0.15); text-transform: none; letter-spacing: normal; }
-    .tooltip-wrap:hover .tooltip-text { visibility: visible; opacity: 1; }
-
-    /* Accordion */
-    .collapsible-header { cursor: pointer; color: var(--cyan); font-weight: 700; font-size: 0.85rem; user-select: none; margin-bottom: 0.5rem; display: inline-block; padding: 0.4rem 0.8rem; border-radius: 6px; border: 1.5px solid transparent; transition: all 0.2s; }
-    .collapsible-header:hover { background: var(--sky); border-color: var(--border); }
-    .collapsible-content { display: none; padding: 1.25rem; border-left: 4px solid var(--mod-accent); background: var(--mod-bg); border-radius: 0 10px 10px 0; margin-bottom: 1rem; }
-    .collapsible-content.open { display: block; }
-
-    /* Primary Button */
-    .begin-btn { display: inline-flex; align-items: center; gap: 0.65rem; background: var(--navy); color: var(--white); border: 2.5px solid var(--mod-accent); font-family: inherit; font-size: 1rem; font-weight: 700; padding: 0.9rem 2.75rem; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 22px rgba(13,34,64,0.18); transition: background 0.18s, transform 0.15s, box-shadow 0.18s; width: 100%; justify-content: center; margin-top: 0.5rem; }
-    .begin-btn:hover { background: #16325e; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(13,34,64,0.22); }
-
-    /* Pinned Output Section */
-    .output-column { position: sticky; top: 1rem; }
-    .output-card { padding: 1.75rem; background: var(--mod-bg); border-radius: 12px; border: 1.5px solid var(--mod-border); height: calc(100vh - var(--header-h) - 400px); min-height: 500px; display: flex; flex-direction: column; }
-    .output-card h2 { font-size: 1.1rem; color: var(--navy); margin-bottom: 0.25rem; }
-    .output-card p { font-size: 0.85rem; color: var(--text-mid); margin-bottom: 1rem; }
-    #prompt-output { flex: 1; width: 100%; font-family: monospace; font-size: 0.85rem; background: var(--white); border: 1.5px solid var(--border); padding: 1rem; resize: none; margin-bottom: 0; line-height: 1.5; color: var(--navy); }
-
-    /* Guide Section */
-    .single-workspace { max-width: 800px; margin: 0 auto; width: 100%; padding: 2rem 2.5rem 4rem; }
-    .guide-objective { background: var(--mod-bg); border-left: 4px solid var(--mod-accent); border-radius: 0 10px 10px 0; padding: 1rem 1.25rem; font-size: 0.97rem; font-weight: 600; color: var(--navy); line-height: 1.65; margin-bottom: 2rem; }
-    .guide-card { background: var(--sky); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
-    .guide-card h3 { color: var(--navy); font-size: 1rem; margin-bottom: 0.5rem; }
-    .guide-card p { font-size: 0.9rem; color: var(--text-mid); }
-
-    /* Responsive Breakdown */
-    @media (max-width: 992px) {
-      .split-workspace { grid-template-columns: 1fr; gap: 2rem; }
-      .output-column { position: static; }
-      .output-card { min-height: 400px; height: auto; }
-    }
-    @media (max-width: 767px) {
-      body { overflow: auto; } 
-      .layout { flex-direction: column; overflow: visible; } 
-      .hamburger { display: flex; }
-      .sidebar { position: fixed; top: var(--header-h); left: 0; bottom: 0; transform: translateX(-100%); z-index: 50; box-shadow: 4px 0 20px rgba(0,0,0,0.25); }
-      .sidebar.open { transform: translateX(0); } 
-      .content-pane { min-height: calc(100vh - var(--header-h)); overflow: visible; }
-      .form-row { flex-direction: column; gap: 1.75rem; }
-      .split-workspace, .single-workspace { padding: 1.5rem 1.25rem; }
-    }
+    @media (max-width: 768px) { .sidebar { display: none; } .hamburger { display: block; } .active-view { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
-  <!-- Header -->
-  <header class="top-bar" role="banner">
-    <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="top-bar-left">
-      <a href="index.html" class="home-link">AI <span>for Educators</span></a>
-      <span class="breadcrumb-sep" aria-hidden="true">›</span>
-      <span class="breadcrumb-current">Visual Tools</span>
-    </div>
-    <span class="module-badge">🧠 Tool</span>
-  </header>
+<header class="top-bar">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <strong>Conceptual Framework Builder</strong>
+</header>
 
-  <div class="layout">
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar" aria-label="Module 3 lessons">
-      <div class="sidebar-hero">
-        <span class="sidebar-mod-emoji" aria-hidden="true">🧠</span>
-        <div class="sidebar-mod-pill">Interactive Tool</div>
-        <div class="sidebar-mod-title">Conceptual Framework Builder</div>
-        <div class="sidebar-mod-sub">Turn study logic into visual models</div>
-      </div>
-      <div class="sidebar-nav">
-        <div class="sidebar-nav-label">Workspace</div>
-        <button class="nav-item active" onclick="switchTab('generator')" id="tab-generator">
-          <span class="nav-item-icon" aria-hidden="true">✍️</span>
-          <span class="nav-item-text">Prompt Generator</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('guide')" id="tab-guide">
-          <span class="nav-item-icon" aria-hidden="true">📚</span>
-          <span class="nav-item-text">Educational Guide</span>
-        </button>
-      </div>
-      <div class="sidebar-footer"><a href="index.html">← Back to Course Index</a></div>
+<div class="layout">
+    <nav class="sidebar" id="sidebar">
+        <div class="nav-item active" onclick="switchView('generator')">✍️ Prompt Generator</div>
+        <div class="nav-item" onclick="switchView('guide')">📚 Educational Guide</div>
+        <a href="index.html" class="nav-item">← Back to Course</a>
     </nav>
 
-    <!-- Main Content -->
-    <main class="content-pane" id="main" aria-label="Module content">
-      
-      <!-- Hero Banner -->
-      <div class="landing-hero">
-        <span class="landing-emoji" aria-hidden="true">🧠</span>
-        <div class="landing-pill">Visual Tool</div>
-        <h1 class="landing-title">Conceptual Framework Builder</h1>
-        <p class="landing-tagline">Turn your study logic into an AI-assisted visual layout</p>
-      </div>
-
-      <!-- Tab 1: Split Screen Generator -->
-      <div id="view-generator" class="view-section active-grid split-workspace">
-        
-        <!-- Left Column: Inputs -->
-        <div class="form-inputs-column">
-            <div class="form-group">
-                <label for="purpose">1. Purpose Statement</label>
-                <textarea id="purpose" rows="2" placeholder="Paste your full purpose statement here..."></textarea>
-                <div class="help-text">Gives the AI direction without inventing new concepts.</div>
-            </div>
-
-            <div class="form-group">
-                <label for="phenomenon">2. Central Phenomenon</label>
-                <input type="text" id="phenomenon" placeholder="e.g., The construction of possible selves...">
-                <div class="help-text">What is the study really trying to understand or examine?</div>
-            </div>
-
-            <div class="form-group">
-                <label for="concepts">3. Key Concepts</label>
-                <textarea id="concepts" rows="2" placeholder="List 3-7 core concepts and briefly define them..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="theory">4. Theoretical Framework</label>
-                <input type="text" id="theory" placeholder="Name the theory and what it helps explain...">
-                <textarea id="theory-explain" rows="2" placeholder="(Optional) How does this theory specifically explain your concepts?"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="paradigm">
-                    5. Research Paradigm
-                    <div class="tooltip-wrap">?
-                        <div class="tooltip-text">
-                            <strong>Positivist:</strong> Variables, measurable relationships, prediction.<br><br>
-                            <strong>Constructivist:</strong> Meaning-making, lived experience, context.<br><br>
-                            <strong>Critical:</strong> Power, structures, access, institutional conditions.<br><br>
-                            <strong>Pragmatic:</strong> Problem-first, blended methods.
-                        </div>
+    <main class="content-pane">
+        <div id="view-generator" class="view-section active-view">
+            <div class="form-inputs">
+                <div class="form-group"><label>Purpose Statement</label><textarea id="purpose" rows="2"></textarea></div>
+                <div class="form-group"><label>Central Phenomenon</label><input type="text" id="phenomenon"></div>
+                <div class="form-group"><label>Key Concepts</label><textarea id="concepts" rows="2"></textarea></div>
+                <div class="form-group"><label>Theory & Components</label><input type="text" id="theory" placeholder="Theory Name..."><textarea id="theory-components" rows="2" placeholder="Key tenets/constructs..."></textarea></div>
+                <div class="form-group"><label>Research Paradigm</label>
+                    <div class="checkbox-group" id="paradigm-options">
+                        <label><input type="checkbox" value="Positivist"> Positivist</label>
+                        <label><input type="checkbox" value="Postpositivist"> Postpositivist</label>
+                        <label><input type="checkbox" value="Constructivist"> Constructivist</label>
+                        <label><input type="checkbox" value="Critical"> Critical</label>
+                        <label><input type="checkbox" value="Pragmatic"> Pragmatic</label>
                     </div>
-                </label>
-                <select id="paradigm" onchange="toggleOtherParadigm()">
-                    <option value="Positivist / Postpositivist">Positivist / Postpositivist</option>
-                    <option value="Constructivist / Interpretivist">Constructivist / Interpretivist</option>
-                    <option value="Critical">Critical</option>
-                    <option value="Pragmatic / Mixed Methods">Pragmatic / Mixed Methods</option>
-                    <option value="Other">Other (Please specify)</option>
-                </select>
-                <input type="text" id="paradigm-other" placeholder="Type your research paradigm here..." style="display: none; margin-top: 0.5rem;">
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="structure">6. Visual Structure</label>
+                </div>
+                <div class="form-group"><label>Visual Structure</label>
                     <select id="structure">
-                        <option value="Concept map">Concept map</option>
-                        <option value="Straight pathway">Straight pathway</option>
                         <option value="Layered model">Layered model</option>
-                        <option value="Process or timeline">Process or timeline</option>
-                        <option value="Nested or ecological map">Nested or ecological map</option>
-                        <option value="Comparison or two-path model">Comparison or two-path model</option>
+                        <option value="Funnel model">Funnel model</option>
+                        <option value="Path Analysis">Path Analysis / Regression</option>
+                        <option value="Moderation/Mediation">Moderation/Mediation</option>
+                        <option value="Concept map">Concept map</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="style">7. Look and Feel</label>
-                    <select id="style">
-                        <option value="Clean academic diagram">Clean academic diagram</option>
-                        <option value="Hand-drawn rough draft">Hand-drawn rough draft</option>
-                        <option value="Sticky-note workshop map">Sticky-note workshop map</option>
-                        <option value="Black-and-white print version">Black-and-white print version</option>
-                        <option value="Muted color-coded model">Muted color-coded model</option>
-                        <option value="Whiteboard or marker style">Whiteboard or marker style</option>
-                        <option value="Minimalist wireframe">Minimalist wireframe</option>
-                        <option value="Modern infographic">Modern infographic</option>
-                        <option value="Chalkboard sketch">Chalkboard sketch</option>
-                        <option value="Corporate presentation slide">Corporate presentation slide</option>
-                        <option value="High-contrast accessibility mode">High-contrast accessibility mode</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Visual Legend</label><input type="text" id="legend"></div>
+                <button class="begin-btn" onclick="generatePrompt()">Generate APA Framework Prompt</button>
             </div>
-
-            <div class="form-group">
-                <label>8. Line Style Meanings (Optional)</label>
-                <div class="help-text" style="margin-bottom:0.5rem;">Define what your lines represent (e.g., tested relationships vs. contextual influence).</div>
-                <div class="form-row">
-                    <input type="text" id="line-solid" placeholder="Solid arrows mean...">
-                    <input type="text" id="line-dashed" placeholder="Dashed/dotted lines mean...">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="collapsible-header" onclick="toggleAccordion('process-accordion')">
-                    + Add a Process Timeline (Optional)
-                </div>
-                <div id="process-accordion" class="collapsible-content">
-                    <div class="help-text" style="margin-bottom:0.5rem; color:var(--navy);">Use this if your study examines transition, development, or change over time.</div>
-                    <input type="text" id="process-before" placeholder="Before stage (e.g., initial experiences)...">
-                    <input type="text" id="process-during" placeholder="During stage...">
-                    <input type="text" id="process-after" placeholder="After stage (e.g., outcomes)...">
-                </div>
-            </div>
-
-            <button class="begin-btn" onclick="generatePrompt()">Generate AI Prompt</button>
-        </div>
-
-        <!-- Right Column: Pinned Output -->
-        <div class="output-column">
             <div class="output-card">
-                <h2>Your Custom Prompt</h2>
-                <p>Copy the text below into your preferred AI generator. The prompt already includes a link to the reference layout.</p>
-                <textarea id="prompt-output" readonly placeholder="Fill out the form on the left and click 'Generate AI Prompt' to build your layout instructions..."></textarea>
+                <h2>Generated Prompt</h2>
+                <textarea id="prompt-output" readonly></textarea>
             </div>
         </div>
-
-      </div>
-
-      <!-- Tab 2: Guide -->
-      <div id="view-guide" class="view-section single-workspace">
-        <p class="guide-objective">Build the study backbone before you design anything. This gives the AI enough direction to organize your thinking without inventing new concepts.</p>
         
-        <div class="guide-card">
-            <h3>Conceptual vs. Theoretical</h3>
-            <p><strong>Conceptual Framework:</strong> A structure that organizes and guides the research process by identifying key variables, concepts, and relationships.</p>
-            <p style="margin-top:0.5rem;"><strong>Theoretical Framework:</strong> A set of established theories or perspectives that guide your approach to the research.</p>
-        </div>
-
-        <!-- NEW VIDEO SECTION -->
-        <div class="guide-card">
-            <h3>Video Overview: Conceptual vs. Theoretical</h3>
-            <p>If you prefer a visual explanation, Dr. Elizabeth Yardley breaks down the differences between these frameworks and how they connect to your broader research paradigm.</p>
-            
-            <!-- Responsive Video Embed -->
-            <div style="aspect-ratio: 16 / 9; width: 100%; border-radius: 8px; overflow: hidden; margin-top: 1rem; border: 1.5px solid var(--border); box-shadow: var(--shadow-sm);">
-                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/lkOSTRVWFEM" title="Conceptual vs theoretical framework" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display: block;"></iframe>
+        <div id="view-guide" class="view-section">
+            <div class="guide-card">
+                <h3>Target Visual Layout</h3>
+                <img src="Demo%20Conceptual%20Framework.png" alt="Reference Layout" style="width:100%; border-radius:8px;">
             </div>
-            
-            <!-- Academic Citation -->
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.85rem; line-height: 1.4;">
-                <strong>Citation (APA 7th):</strong> Degree Doctor. (2024, June 19). <em>Conceptual vs theoretical framework</em> [Video]. YouTube. https://www.youtube.com/watch?v=lkOSTRVWFEM
-            </p>
         </div>
-
-        <div class="guide-card">
-            <h3>Target Visual Layout</h3>
-            <p>Your prompt is designed to instruct the AI to generate a layout similar to the reference image below.</p>
-            <img src="Demo%20Conceptual%20Framework.png" alt="Reference Framework Layout" style="max-width: 100%; height: auto; border-radius: 8px; border: 1.5px solid var(--border); margin-top: 1rem; box-shadow: var(--shadow-sm);">
-        </div>
-
-        <div class="guide-card">
-            <h3>Step-by-Step Logic</h3>
-            <ol style="margin-left: 1.5rem; font-size: 0.9rem; color: var(--text-mid); line-height: 1.6;">
-                <li><strong>Identify the Central Phenomenon:</strong> What is the "thing" your study is really about?</li>
-                <li><strong>Identify Major Concepts:</strong> If you removed an idea from the framework, would the study fundamentally change? If not, leave it out.</li>
-                <li><strong>Consider the Paradigm:</strong> Your paradigm determines whether you emphasize measurable relationships (Positivist) or meaning-making and lived experience (Constructivist).</li>
-            </ol>
-        </div>
-      </div>
-
     </main>
-  </div>
+</div>
 
-  <script>
-    // Sidebar Mobile Toggle Logic
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const hamburger = document.getElementById('hamburger');
-
-    function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('visible'); }
-    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('visible'); }
-    hamburger.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
-    overlay.addEventListener('click', closeSidebar);
-
-    // Tab Switching Logic
-    function switchTab(tabName) {
-        document.getElementById('view-generator').classList.remove('active-grid');
-        document.getElementById('view-guide').classList.remove('active-block');
+<script>
+    function switchView(view) {
+        document.getElementById('view-generator').classList.remove('active-view');
+        document.getElementById('view-guide').classList.remove('active-view');
+        document.getElementById('view-' + view).classList.add('active-view');
         
-        document.getElementById('tab-generator').classList.remove('active');
-        document.getElementById('tab-guide').classList.remove('active');
-
-        if(tabName === 'generator') {
-            document.getElementById('view-generator').classList.add('active-grid');
-        } else {
-            document.getElementById('view-guide').classList.add('active-block');
-        }
-        
-        document.getElementById('tab-' + tabName).classList.add('active');
-        
-        // On mobile, close sidebar after clicking a tab
-        if(window.innerWidth < 767) { closeSidebar(); }
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
     }
 
-    // Paradigm Toggle Logic for "Other" field
-    function toggleOtherParadigm() {
-        const paradigmSelect = document.getElementById('paradigm');
-        const paradigmOtherInput = document.getElementById('paradigm-other');
-        
-        if (paradigmSelect.value === 'Other') {
-            paradigmOtherInput.style.display = 'block';
-            paradigmOtherInput.focus();
-        } else {
-            paradigmOtherInput.style.display = 'none';
-        }
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.style.display = sidebar.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    // Accordion Logic
-    function toggleAccordion(id) {
-        const content = document.getElementById(id);
-        content.classList.toggle('open');
-        const header = content.previousElementSibling;
-        if (content.classList.contains('open')) {
-            header.innerText = '- Remove Process Timeline';
-        } else {
-            header.innerText = '+ Add a Process Timeline (Optional)';
-            document.getElementById('process-before').value = '';
-            document.getElementById('process-during').value = '';
-            document.getElementById('process-after').value = '';
-        }
-    }
-
-    // Prompt Generation Logic
     function generatePrompt() {
-        const purpose = document.getElementById('purpose').value || '[PASTE PURPOSE STATEMENT]';
-        const phenomenon = document.getElementById('phenomenon').value || '[STATE IT IN ONE SENTENCE]';
-        const concepts = document.getElementById('concepts').value || '[LIST 3-7 CONCEPTS AND BRIEFLY DEFINE THEM]';
-        const theory = document.getElementById('theory').value || '[NAME THE THEORY OR THEORIES]';
-        const theoryExplain = document.getElementById('theory-explain').value;
-        
-        let paradigm = document.getElementById('paradigm').value;
-        if (paradigm === 'Other') {
-            paradigm = document.getElementById('paradigm-other').value || 'an unspecified';
-        }
-
-        const structure = document.getElementById('structure').value;
-        const style = document.getElementById('style').value;
-        const lineSolid = document.getElementById('line-solid').value;
-        const lineDashed = document.getElementById('line-dashed').value;
-        const processBefore = document.getElementById('process-before').value;
-        const processDuring = document.getElementById('process-during').value;
-        const processAfter = document.getElementById('process-after').value;
-
-        let prompt = `Create a conceptual framework for my study. Use a "${structure}" layout structure and render it with a "${style}" appearance. Keep the language clear and do not add concepts that I have not provided.\n\n`;
-        
-        prompt += `Purpose statement:\n${purpose}\n\n`;
-        prompt += `Study focus:\nThe central phenomenon or main relationship is: ${phenomenon}\n\n`;
-        prompt += `Include these key concepts or variables:\n${concepts}\n\n`;
-        
-        prompt += `Theoretical framework:\n${theory}. `;
-        if (theoryExplain) {
-            prompt += `\nHow the theory informs the study: ${theoryExplain}. `;
-        }
-        prompt += `\nPlace the theoretical framework above/around/beside the main model and show that it informs or frames the study. Do not make theories look like measured variables unless they are actually measured.\n\n`;
-        
-        prompt += `Research orientation:\nThis study uses a ${paradigm} approach. Reflect this in the visual emphasis (e.g., tested relationships for positivist, meaning-making for constructivist, power structures for critical).\n\n`;
-
-        if (lineSolid || lineDashed) {
-            prompt += `Line Style Meanings:\n`;
-            if (lineSolid) prompt += `- Solid lines indicate: ${lineSolid}\n`;
-            if (lineDashed) prompt += `- Dashed/dotted lines indicate: ${lineDashed}\n`;
-            prompt += `Please include a brief key explaining these line styles on the diagram.\n\n`;
-        }
-
-        if (processBefore || processDuring || processAfter) {
-            prompt += `Process Timeline (Flow of Events):\n`;
-            if (processBefore) prompt += `- Before: ${processBefore}\n`;
-            if (processDuring) prompt += `- During: ${processDuring}\n`;
-            if (processAfter) prompt += `- After: ${processAfter}\n\n`;
-        }
-
-        prompt += `Reference Layout:\nPlease strictly reference the layout style and arrangement seen at this URL: https://mgottschalkcc.github.io/AI/Demo%20Conceptual%20Framework.png`;
+        const paradigms = Array.from(document.querySelectorAll('#paradigm-options input:checked')).map(cb => cb.value).join(', ');
+        const prompt = `[APA FORMATTING MANDATE: Professional APA 7th style.]
+Create a conceptual framework for: ${document.getElementById('purpose').value}.
+Focus: ${document.getElementById('phenomenon').value}.
+Structure: ${document.getElementById('structure').value}.
+Paradigm Logic (Use as filter, do not label on diagram): ${paradigms}.
+Theory Components: ${document.getElementById('theory-components').value}.
+Legend: ${document.getElementById('legend').value}.
+Layout reference: https://mgottschalkcc.github.io/AI/Demo%20Conceptual%20Framework.png`;
 
         document.getElementById('prompt-output').value = prompt;
     }
-  </script>
+</script>
 </body>
 </html>
